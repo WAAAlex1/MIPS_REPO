@@ -1,0 +1,525 @@
+m255
+K4
+z2
+!s11e vcom 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Schooldrive/VivadoProjects/LAB07Source Code
+Ealu
+Z0 w1732487175
+Z1 DPx4 work 13 constants_pkg 0 22 GKY9o5Q1eZfDAPY:0XLnT0
+Z2 DPx4 work 7 records 0 22 oK4^bWV1X@Ub20elO3So11
+Z3 DPx4 ieee 11 numeric_std 0 22 aU^R8eGcicLcUFIaBQSL>3
+Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z5 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 23
+Z6 dC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES
+Z7 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+Z8 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+l0
+L12 1
+V0zQMg<TmgP3F7SgYS3zW]0
+!s100 I<5fV00@8]l4RHTWaV_=M0
+Z9 OV;C;2020.1;71
+32
+Z10 !s110 1732557933
+!i10b 1
+Z11 !s108 1732557933.000000
+Z12 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd|
+Z13 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd|
+!i113 1
+Z14 o-work work -2002 -explicit
+Z15 tExplicit 1 CvgOpt 0
+Aalu_arch
+R1
+R2
+R3
+R4
+R5
+DEx4 work 3 alu 0 22 0zQMg<TmgP3F7SgYS3zW]0
+!i122 23
+l67
+L27 118
+Vg9VVcZ5:Me]El;dU4n?<X2
+!s100 F<8oU6_aNG1o_DC=mN:Hn1
+R9
+32
+R10
+!i10b 1
+R11
+R12
+R13
+!i113 1
+R14
+R15
+Ealu_control
+Z16 w1732493133
+R2
+R3
+R4
+R5
+!i122 24
+R6
+Z17 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd
+Z18 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd
+l0
+L8 1
+VgLR8Bl[@MJ]hXE@EQWJTJ3
+!s100 fzA9;2G48GmQo^3IM;:eo3
+R9
+32
+R10
+!i10b 1
+R11
+Z19 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd|
+Z20 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd|
+!i113 1
+R14
+R15
+Aalu_control_arc
+R2
+R3
+R4
+R5
+DEx4 work 11 alu_control 0 22 gLR8Bl[@MJ]hXE@EQWJTJ3
+!i122 24
+l20
+L19 58
+Vl2^ZzJ^^RgAbCAjJTbWSQ0
+!s100 Q:lRkjzXfbOA`:Le]I@4>2
+R9
+32
+R10
+!i10b 1
+R11
+R19
+R20
+!i113 1
+R14
+R15
+Pconstants_pkg
+R3
+R4
+R5
+!i122 0
+w1732398105
+R6
+8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/CONSTANTS.vhd
+FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/CONSTANTS.vhd
+l0
+L5 1
+VGKY9o5Q1eZfDAPY:0XLnT0
+!s100 T4XZ7R6PU1I@XTkU_cMDV0
+R9
+32
+Z21 !s110 1732555215
+!i10b 1
+Z22 !s108 1732555215.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/CONSTANTS.vhd|
+!s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/CONSTANTS.vhd|
+!i113 1
+R14
+R15
+Econtrol_unit
+Z23 w1732503213
+R2
+R1
+R3
+R4
+R5
+!i122 27
+R6
+Z24 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd
+Z25 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd
+l0
+L9 1
+V9d2_^f_mB;N]:gNU5kn>c2
+!s100 6BjfWEb^hNeIh6LKS1_>?1
+R9
+32
+R10
+!i10b 1
+R11
+Z26 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd|
+Z27 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd|
+!i113 1
+R14
+R15
+Aarch_cu
+R2
+R1
+R3
+R4
+R5
+DEx4 work 12 control_unit 0 22 9d2_^f_mB;N]:gNU5kn>c2
+!i122 27
+l47
+L30 73
+V7n:8gUlzDHEk`41L3fUdn1
+!s100 ll3Yg9435Gz56T`;[Knf_2
+R9
+32
+R10
+!i10b 1
+R11
+R26
+R27
+!i113 1
+R14
+R15
+Eex_mem_registers
+Z28 w1732476234
+R1
+R2
+R3
+R4
+R5
+!i122 25
+R6
+Z29 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd
+Z30 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd
+l0
+L9 1
+VA8GgL>2?Q<aIe>VGfi33Y1
+!s100 WgJAH`KSM;BnA1R;l^6;z1
+R9
+32
+R10
+!i10b 1
+R11
+Z31 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd|
+Z32 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd|
+!i113 1
+R14
+R15
+Aarch_ex_mem_regs
+R1
+R2
+R3
+R4
+R5
+DEx4 work 16 ex_mem_registers 0 22 A8GgL>2?Q<aIe>VGfi33Y1
+!i122 25
+l38
+L37 29
+VN;=7_b0L;cIX;bhXd`29n1
+!s100 P>P7dGcbz0=:`VLFGNBfN0
+R9
+32
+R10
+!i10b 1
+R11
+R31
+R32
+!i113 1
+R14
+R15
+Eex_stage
+Z33 w1732487606
+R1
+R2
+R3
+R4
+R5
+!i122 26
+R6
+Z34 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd
+Z35 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd
+l0
+Z36 L10 1
+Vl]PB`zRFo6Rc_3ZOM_Iei0
+!s100 9LacW;dz<NbMMaZOCZ7KG1
+R9
+32
+R10
+!i10b 1
+R11
+Z37 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd|
+Z38 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd|
+!i113 1
+R14
+R15
+Aarch_ex
+R1
+R2
+R3
+R4
+R5
+DEx4 work 8 ex_stage 0 22 l]PB`zRFo6Rc_3ZOM_Iei0
+!i122 26
+l132
+L43 174
+VMgPI?I4:h>2@H6J8<j^oa2
+!s100 RSBg?VJebl2WY2g:S2XjP1
+R9
+32
+R10
+!i10b 1
+R11
+R37
+R38
+!i113 1
+R14
+R15
+Eid_ex_registers
+Z39 w1732554901
+R1
+R2
+R3
+R4
+R5
+!i122 28
+R6
+Z40 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd
+Z41 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd
+l0
+R36
+V?oLRY9>gAki=l0NQ?I=]R2
+!s100 2mKLo_C8I3WJ50am3A[8Q2
+R9
+32
+R10
+!i10b 1
+R11
+Z42 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd|
+Z43 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd|
+!i113 1
+R14
+R15
+Aarch_id_ex_regs
+R1
+R2
+R3
+R4
+R5
+DEx4 work 15 id_ex_registers 0 22 ?oLRY9>gAki=l0NQ?I=]R2
+!i122 28
+l45
+L44 39
+VJgcGUbkL2L?O4?4z?2_mP3
+!s100 :bIiL4<If4;32HJTFglT=0
+R9
+32
+R10
+!i10b 1
+R11
+R42
+R43
+!i113 1
+R14
+R15
+Eid_ex_tb
+Z44 w1732556282
+R1
+R2
+R3
+R4
+R5
+!i122 21
+R6
+Z45 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd
+Z46 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd
+l0
+L11 1
+V21C4iTL9Xc6h9hi]h[`J^0
+!s100 U9C04]F?GD<kKUHN^n78A2
+R9
+32
+R10
+!i10b 1
+Z47 !s108 1732557932.000000
+Z48 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd|
+Z49 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd|
+!i113 1
+R14
+R15
+Abehavioral
+R1
+R2
+R3
+R4
+R5
+DEx4 work 8 id_ex_tb 0 22 21C4iTL9Xc6h9hi]h[`J^0
+!i122 21
+l69
+L14 117
+VL=oXSRXOi>T9NCZjER@WP1
+!s100 WE=3WFlC8nL@lXV=Uo8^83
+R9
+32
+R10
+!i10b 1
+R47
+R48
+R49
+!i113 1
+R14
+R15
+Eid_ex_test
+Z50 w1732555883
+R1
+R2
+R3
+R4
+R5
+!i122 22
+R6
+Z51 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd
+Z52 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd
+l0
+L9 1
+V<94ROg5<[GH4_Y7i6@2ND2
+!s100 T90@;X2`ziHan?O]`]1HO0
+R9
+32
+R10
+!i10b 1
+R11
+Z53 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd|
+Z54 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd|
+!i113 1
+R14
+R15
+Abehavioral
+R1
+R2
+R3
+R4
+R5
+DEx4 work 10 id_ex_test 0 22 <94ROg5<[GH4_Y7i6@2ND2
+!i122 22
+l113
+L35 141
+Vl1H9JFGDgXccF`YC1R^H80
+!s100 eCAc;K?4VgEg=RXPoLL3>2
+R9
+32
+R10
+!i10b 1
+R11
+R53
+R54
+!i113 1
+R14
+R15
+Eid_stage
+Z55 w1732552540
+R1
+R2
+R3
+R4
+R5
+!i122 29
+R6
+Z56 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd
+Z57 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd
+l0
+R36
+V`ULknh;4emR:b6Zb=6IjC3
+!s100 E1M<k8fC01?zBg`KE1DE_3
+R9
+32
+R10
+!i10b 1
+R11
+Z58 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd|
+Z59 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd|
+!i113 1
+R14
+R15
+Aarch_id_stage
+R1
+R2
+R3
+R4
+R5
+DEx4 work 8 id_stage 0 22 `ULknh;4emR:b6Zb=6IjC3
+!i122 29
+l127
+L41 167
+VlXN[jNBAUl4<W`A=jVYWn3
+!s100 DU_lV6R5ifJR^C3LLYbhK3
+R9
+32
+R10
+!i10b 1
+R11
+R58
+R59
+!i113 1
+R14
+R15
+Precords
+R3
+R4
+R5
+!i122 1
+w1732496675
+R6
+8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/RECORDS.vhd
+FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/RECORDS.vhd
+l0
+L6 1
+VoK4^bWV1X@Ub20elO3So11
+!s100 Ma:;1BEXc1Xa^DQ[d1W3Q3
+R9
+32
+R21
+!i10b 1
+R22
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/RECORDS.vhd|
+!s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/GLOBAL_FILES/RECORDS.vhd|
+!i113 1
+R14
+R15
+Eregister_file
+Z60 w1732494869
+R1
+R2
+R3
+R4
+R5
+!i122 30
+R6
+Z61 8C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd
+Z62 FC:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd
+l0
+R36
+V?T@@9gW:1nOOYai02aOTO2
+!s100 HljL0_EngJDEz4@R3DDe_2
+R9
+32
+R10
+!i10b 1
+R11
+Z63 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd|
+Z64 !s107 C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd|
+!i113 1
+R14
+R15
+Aarch_reg_file
+R1
+R2
+R3
+R4
+R5
+Z65 DEx4 work 13 register_file 0 22 ?T@@9gW:1nOOYai02aOTO2
+!i122 30
+l33
+Z66 L26 36
+Z67 Vj]=ZLdM]bEPQU<aIc07N<3
+Z68 !s100 a0^cNRljBDGL]i3ilZ3JV3
+R9
+32
+R10
+!i10b 1
+R11
+R63
+R64
+!i113 1
+R14
+R15

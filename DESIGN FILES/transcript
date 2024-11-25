@@ -1,0 +1,96 @@
+# Compile of ID_EX_TB.vhd was successful with warnings.
+# Compile of ID_EX_TEST.vhd was successful.
+# Compile of ALU.vhd was successful with warnings.
+# Compile of ALU_CONTROL.vhd was successful.
+# Compile of EX_MEM_R.vhd was successful.
+# Compile of EX_STAGE.vhd was successful.
+# Compile of CONTROL_UNIT.vhd was successful.
+# Compile of ID_EX_R.vhd was successful.
+# Compile of ID_STAGE.vhd was successful.
+# Compile of REGISTER_FILE.vhd was successful.
+# 10 compiles, 0 failed with no errors.
+vsim -gui work.id_ex_tb
+# vsim -gui work.id_ex_tb 
+# Start time: 12:44:01 on Nov 25,2024
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.records
+# Loading work.constants_pkg
+# Loading work.id_ex_tb(behavioral)
+# Loading work.id_ex_test(behavioral)
+# Loading work.id_stage(arch_id_stage)
+# Loading work.register_file(arch_reg_file)
+# Loading work.control_unit(arch_cu)
+# Loading work.id_ex_registers(arch_id_ex_regs)
+# Loading work.ex_stage(arch_ex)
+# Loading work.alu_control(alu_control_arc)
+# Loading work.alu(alu_arch)
+# ** Warning: (vsim-3473) Component instance "ADDSUB_UNSIGNED : ADDSUB32x32x32Unsigned" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX/ALU_EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+# ** Warning: (vsim-3473) Component instance "ADDSUB_SIGNED : ADDSUB32x32x32Signed" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX/ALU_EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+# ** Warning: (vsim-3473) Component instance "ADDER : ADDSUB32x32x32Unsigned" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd
+# Loading work.ex_mem_registers(arch_ex_mem_regs)
+quit -sim
+# End time: 12:45:05 on Nov 25,2024, Elapsed time: 0:01:04
+# Errors: 0, Warnings: 7
+# Compile of ID_EX_TB.vhd was successful with warnings.
+# Compile of ID_EX_TEST.vhd was successful.
+# Compile of ALU.vhd was successful with warnings.
+# Compile of ALU_CONTROL.vhd was successful.
+# Compile of EX_MEM_R.vhd was successful.
+# Compile of EX_STAGE.vhd was successful.
+# Compile of CONTROL_UNIT.vhd was successful.
+# Compile of ID_EX_R.vhd was successful.
+# Compile of ID_STAGE.vhd was successful.
+# Compile of REGISTER_FILE.vhd was successful.
+# 10 compiles, 0 failed with no errors.
+vsim -gui work.id_ex_tb
+# vsim -gui work.id_ex_tb 
+# Start time: 13:05:49 on Nov 25,2024
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.records
+# Loading work.constants_pkg
+# Loading work.id_ex_tb(behavioral)
+# Loading work.id_ex_test(behavioral)
+# Loading work.id_stage(arch_id_stage)
+# Loading work.register_file(arch_reg_file)
+# Loading work.control_unit(arch_cu)
+# Loading work.id_ex_registers(arch_id_ex_regs)
+# Loading work.ex_stage(arch_ex)
+# Loading work.alu_control(alu_control_arc)
+# Loading work.alu(alu_arch)
+# ** Warning: (vsim-3473) Component instance "ADDSUB_UNSIGNED : ADDSUB32x32x32Unsigned" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX/ALU_EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+# ** Warning: (vsim-3473) Component instance "ADDSUB_SIGNED : ADDSUB32x32x32Signed" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX/ALU_EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd
+# ** Warning: (vsim-3473) Component instance "ADDER : ADDSUB32x32x32Unsigned" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /id_ex_tb/dut/EX File: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd
+# Loading work.ex_mem_registers(arch_ex_mem_regs)
+quit -sim
+# End time: 13:06:16 on Nov 25,2024, Elapsed time: 0:00:27
+# Errors: 0, Warnings: 6
+vsim lpm.lpm_add_sub_signed lpm.lpm_add_sub_unsigned
+# vsim lpm.lpm_add_sub_signed lpm.lpm_add_sub_unsigned 
+# Start time: 13:08:17 on Nov 25,2024
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_signed(body)
+# Loading lpm.lpm_components
+# Loading lpm.lpm_add_sub_signed(lpm_syn)
+# Loading ieee.std_logic_unsigned(body)
+# Loading lpm.lpm_add_sub_unsigned(lpm_syn)
+# ** Fatal: (vsim-3350) Generic "lpm_width" has not been given a value.
+#    Time: 0 ps  Iteration: 0  Instance: /lpm_add_sub_signed File: C:/intelFPGA/20.1/modelsim_ase/win32aloem/../altera/vhdl/src/220model/220model.vhd Line: 1593
+# FATAL ERROR while loading design
+# Error loading design
+# End time: 13:08:17 on Nov 25,2024, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 3

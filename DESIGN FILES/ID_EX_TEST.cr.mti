@@ -1,0 +1,113 @@
+{C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TEST.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity ID_EX_TEST
+-- Compiling architecture Behavioral of ID_EX_TEST
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/REGISTER_FILE.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity REGISTER_FILE
+-- Compiling architecture ARCH_REG_FILE of REGISTER_FILE
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_STAGE.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity ID_STAGE
+-- Compiling architecture ARCH_ID_STAGE of ID_STAGE
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/CONTROL_UNIT.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package CONSTANTS_PKG
+-- Loading package RECORDS
+-- Compiling entity CONTROL_UNIT
+-- Compiling architecture ARCH_CU of CONTROL_UNIT
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_STAGE.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity EX_STAGE
+-- Compiling architecture ARCH_EX of EX_STAGE
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/EX_MEM_R.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity EX_MEM_REGISTERS
+-- Compiling architecture ARCH_EX_MEM_REGS of EX_MEM_REGISTERS
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd} {2 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity ID_EX_TB
+-- Compiling architecture Behavioral of ID_EX_TB
+** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/TESTBENCH FILES/ID_EX_TB.vhd(16): (vcom-1207) An abstract literal and an identifier must have a separator between them.
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/ID_STAGE/ID_EX_R.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity ID_EX_REGISTERS
+-- Compiling architecture ARCH_ID_EX_REGS of ID_EX_REGISTERS
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU_CONTROL.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Compiling entity ALU_CONTROL
+-- Compiling architecture ALU_CONTROL_ARC of ALU_CONTROL
+
+} {} {}} {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd} {2 {vcom -work work -2002 -explicit -stats=none {C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RECORDS
+-- Loading package CONSTANTS_PKG
+-- Compiling entity ALU
+-- Compiling architecture ALU_ARCH of ALU
+** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd(121): (vcom-1074) Non-locally static OTHERS choice is allowed only if it is the only choice of the only association.
+** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd(127): (vcom-1074) Non-locally static OTHERS choice is allowed only if it is the only choice of the only association.
+
+} {} {}}
