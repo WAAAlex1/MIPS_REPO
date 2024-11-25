@@ -1,9 +1,9 @@
-**/.cr.mti
-**/.mpf
-**/.wlf
-**/.qdb
-**/.qpg
-**/.qtl
+**/*.cr.mti
+**/*.mpf
+**/*.wlf
+**/*.qdb
+**/*.qpg
+**/*.qtl
 **/_info
 **/_vmake
 **/transcript
