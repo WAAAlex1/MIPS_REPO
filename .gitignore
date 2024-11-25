@@ -1,9 +1,8 @@
-**/*.cr.mti
-**/*.mpf
-**/*.wlf
-**/*.qdb
-**/*.qpg
-**/*.qtl
-**/_info
-**/_vmake
-**/transcript
+DESIGN FILES/*.cr.mti
+DESIGN FILES/*.mpf
+DESIGN FILES/transcript.*
+DESIGN FILES/*.wlf
+DESIGN FILES/work/**
+*.wlf
+*.mpf
+/DESIGN FILES/work

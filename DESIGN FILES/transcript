@@ -93,4 +93,4 @@ vsim lpm.lpm_add_sub_signed lpm.lpm_add_sub_unsigned
 # FATAL ERROR while loading design
 # Error loading design
 # End time: 13:08:17 on Nov 25,2024, Elapsed time: 0:00:00
-# Errors: 1, Warnings: 3...
+# Errors: 1, Warnings: 3

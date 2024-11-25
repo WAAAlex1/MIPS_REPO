@@ -108,6 +108,6 @@ Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 
 -- Compiling entity ALU
 -- Compiling architecture ALU_ARCH of ALU
 ** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd(121): (vcom-1074) Non-locally static OTHERS choice is allowed only if it is the only choice of the only association.
-** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd(127): (vcom-1074) Non-locally static OTHERS choice is allowed only if it is the only choice of the only association.
+** Warning: C:/Schooldrive/VivadoProjects/MIPS_PROCESSOR SOURCE CODE/DESIGN FILES/EX_STAGE/ALU.vhd(127): (vcom-1074) Non-locally static OTHERS choice is allowed only if it is the only choice of the only association
 
 } {} {}}
