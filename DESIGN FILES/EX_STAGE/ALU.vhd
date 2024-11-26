@@ -18,9 +18,7 @@ entity ALU is
 		RESULT  	: out STD_LOGIC_VECTOR(N-1 downto 0);
 		
 		-- Record of ALU setting (input from ALU_Control)
-		-- Record of ALU FLAGS (Output from here)
-		ALU_OPSEL	: in ALU_OPSELECT;
-		FLAGS   	: out ALU_FLAGS
+		ALU_OPSEL	: in ALU_OPSELECT
 	);
 end;
 
@@ -65,13 +63,10 @@ signal ADD: STD_LOGIC;
 
 begin
 
-FLAGS <= ('0','0','0');
-
 SOURCE1_UNSIGNED <= unsigned(SOURCE1);
 SOURCE2_UNSIGNED <= unsigned(SOURCE2);
 SOURCE1_SIGNED   <= signed(SOURCE1);
 SOURCE2_SIGNED   <= signed(SOURCE2);
-
 
 -- SELECT IF ADDING OR SUBTRACTING
 with ALU_OPSEL select

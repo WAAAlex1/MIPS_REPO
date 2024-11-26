@@ -7,26 +7,18 @@ package RECORDS is
     
     -- ALU_OPSELECT ENCODED
     type ALU_OPSELECT is (ADDU, ADDS, SUBU, SUBS, AND0, OR0, SLTU, SLTS, SLL0, SRL0, SL16);
-    
-    
-    	
-	type ALU_FLAGS is
-    record
-        --LESS        :   STD_LOGIC;
-        --GREATER     :   STD_LOGIC;
-        EQUAL       :   STD_LOGIC;
-    end record;
+    type REG_ARR is ARRAY(31 DOWNTO 0) of STD_LOGIC_VECTOR(31 DOWNTO 0);
     
     type EX_CTRL_REG is
     record
        	ALUTYPE		:	STD_LOGIC; -- 1 for R type, 0 for I type
 		ALUSrc		:	STD_LOGIC; -- 1 for using immediate value, 0 for not
 		ALULS       :   STD_LOGIC; -- 1 for Logical shifting, 0 for not
+		ALUOpSelect :   ALU_OPSELECT;
     end record;
 
     type MEM_CTRL_REG is
     record
-        Branch		:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 01 for BNE, 10 for BEQ, 00 for not branching
         W_R_CTRL	:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 00 Reading BYTE, 
                                                        -- 01 Writing BYTE, 
                                                        -- 10 Writing WORD,

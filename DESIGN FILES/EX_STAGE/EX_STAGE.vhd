@@ -6,18 +6,15 @@ library work;
 use work.records.all;
 use work.constants_pkg.all;
 
-
 entity EX_STAGE is
 	port( 
 		--INPUTS
      	CLK			    : in STD_LOGIC;					
 		RESET			: in STD_LOGIC;					
      					     	
-		PC_ADDR   	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RS_DATA	        : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 	    RT_DATA 		: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		OFFSET			: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
-		OPCODE          : IN STD_LOGIC_VECTOR (5 DOWNTO 0);
 		RT_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
 		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);			 				
 		
@@ -27,13 +24,11 @@ entity EX_STAGE is
 		EX_CTRL			: in EX_CTRL_REG;		     	      
 		
 		--OUTPUTS			
-		PC_ADDR_O	    : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RESULT_O		: out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);	
 		RT_DATA_O		: out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
 		--Control Outputs
-		ALU_FLAGS_O	    : out ALU_FLAGS;
 		WB_CTRL_O       : out WB_CTRL_REG;				
 		MEM_CTRL_O		: out MEM_CTRL_REG			
 	);
@@ -55,21 +50,9 @@ Component ALU is
 		
 		-- Record of ALU setting (input from ALU_Control)
 		-- Record of ALU FLAGS (Output from here)
-		ALU_OPSEL	: in ALU_OPSELECT;
-		FLAGS	    : out ALU_FLAGS
+		ALU_OPSEL	: in ALU_OPSELECT
 	);
 end component ALU;
-
-component ALU_CONTROL is
-	port(
-		-- INPUTS				
-        FUNCT		:	in STD_LOGIC_VECTOR(5 DOWNTO 0);	
-        OPCODE      :   IN STD_LOGIC_VECTOR(5 DOWNTO 0);
-        ALU_TYPE	:	in STD_LOGIC;	
-        -- OUTPUTS	
-        ALU_OPSEL	:	out ALU_OPSELECT	
-	);
-end component ALU_CONTROL;
 
 component EX_MEM_REGISTERS is 
     port(
@@ -78,45 +61,25 @@ component EX_MEM_REGISTERS is
 		RESET		    :	in STD_LOGIC;					             -- Asynchronous 
 		
 		-- INPUTS PROPAGATED THROUGH REGISTER
-		PC_ADDR_EX 	    :	in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	 -- Propagate PC_ADDR		
 		ALU_RES_EX	    :	in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	 -- Result of ALU
 		RT_EX		    :	in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	 -- Propagate RT Operand
 		RT_RD_IDX_EX	:	in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	 -- Propagate RT/RD Address
 		--Control signals
-		ALU_FLAGS_EX	:	in ALU_FLAGS;					             -- Propagate ALU_FLAGS
 		WB_CTRL_EX	    :	in WB_CTRL_REG; 				             -- Control signals FOR WB_STAGE
 		MEM_CTRL_EX	    :	in MEM_CTRL_REG;				             -- Control signals for MEM_STAGE
 		 						     	      
 		--OUTPUTS		            
-		PC_ADDR_MEM	    :	out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);					
 		ALU_RES_MEM	    :	out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);	
 		RT_MEM		    :	out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX_MEM	:	out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
 		--Control signals
-		ALU_FLAGS_MEM	:	out ALU_FLAGS;
 	    WB_CTRL_MEM	    :	out WB_CTRL_REG; 				             
 		MEM_CTRL_MEM	:	out MEM_CTRL_REG	    
         );
 end component EX_MEM_REGISTERS;
 
--- UNSIGNED 32x32x32 ADDSUB MODULE.
--- S = A - B
--- ADD CONTROLS +- (+ IF HIGH, - IF LOW).
-COMPONENT ADD32x32x32_U_S
-  PORT (
-    A : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    B : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    CE: IN STD_LOGIC; 
-    S : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) 
-  );
-END COMPONENT;
-
 --SIGNAL DECLARATIONS
 
-    --SIGNALS COMPUTING PC_ADDR_O
-    signal OFFSET_LS2	       : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
-    signal PC_ADDR_INTERNAL	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
-    
     --SIGNALS FOR COMPUTING MUX ON RT AND RS
     signal ALU_REG_INTERNAL2	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
     signal ALU_REG_INTERNAL1	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
@@ -125,14 +88,9 @@ END COMPONENT;
     signal RT_RD_IDX_INTERNAL : STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 
     --SIGNALS FOR ALU
-    signal ALU_OPSEL_INTERNAL  : ALU_OPSELECT; -- ALU_OPSELECT
 	signal ALU_RES_INTERNAL	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
-	signal ALU_FLAGS_INTERNAL  : ALU_FLAGS;
 
 begin
-
--- SHIFTING -------------------------------------------------------
-    OFFSET_LS2 <= OFFSET(29 DOWNTO 0) & b"00";
 
 -- MUXES    -------------------------------------------------------
     -- RT_RD_IDX MUX
@@ -153,17 +111,6 @@ begin
            OFFSET  when others;       
 
 -- INSTANTIATE COMPONENTS -----------------------------------------
--- ALU_CONTROL
--- ALU_OPSEL CONTROL SIGNAL CREATED AND PUT INTO ALU_OPSEL_INTERNAL
-ALU_CONTROL_EX: ALU_CONTROL 
-         PORT MAP(
-            -- INPUTS				
-            FUNCT		=> OFFSET(5 DOWNTO 0),	
-            OPCODE      => OPCODE,
-            ALU_TYPE	=> EX_CTRL.ALUTYPE,
-            -- OUTPUTS	
-            ALU_OPSEL   => ALU_OPSEL_INTERNAL  
-         );
 
 -- ALU
 -- ALU RESULT CREATED AND PUT INTO ALU_RES_INTERNAL
@@ -177,21 +124,8 @@ ALU_EX: ALU GENERIC MAP(N => INST_SIZE)
             
             -- Record of ALU setting (input from ALU_Control)
             -- Record of ALU FLAGS (Output from here)
-            ALU_OPSEL	=> ALU_OPSEL_INTERNAL,
-            FLAGS	    => ALU_FLAGS_INTERNAL
+            ALU_OPSEL	=> EX_CTRL.ALUOpselect
         );
-
---ADDER
--- NEW PC_ADDR IS COMPUTED AND PUT INTO PC_ADDR_INTERNAL
--- A IS UNSIGNED, B IS SIGNED.
--- ALWAYS ADDING
-PC_ADDER: ADD32x32x32_U_S
-  PORT MAP (
-    A => PC_ADDR,
-    B => OFFSET_LS2,
-    CE => '1',
-    S => PC_ADDR_INTERNAL
-  );
   
 --EX_MEM REGISTERS
 EX_MEM_REGS: EX_MEM_REGISTERS PORT MAP(
@@ -199,22 +133,18 @@ EX_MEM_REGS: EX_MEM_REGISTERS PORT MAP(
 		RESET => RESET,
 		
 		-- INPUTS PROPAGATED THROUGH REGISTER
-		PC_ADDR_EX    => PC_ADDR_INTERNAL,	  	
 		ALU_RES_EX    => ALU_RES_INTERNAL,	    
 		RT_EX         => RT_DATA,		   
 		RT_RD_IDX_EX  => RT_RD_IDX_INTERNAL,
 		--Control signals
-		ALU_FLAGS_EX  => ALU_FLAGS_INTERNAL,	
 		WB_CTRL_EX	  => WB_CTRL,
 		MEM_CTRL_EX	  => MEM_CTRL, 
 		 						     	      
 		--OUTPUTS		            
-		PC_ADDR_MEM	  => PC_ADDR_O, 					
 		ALU_RES_MEM	  => RESULT_O,
 		RT_MEM		  => RT_DATA_O,
 		RT_RD_IDX_MEM => RT_RD_IDX_O,		
 		--Control signals
-		ALU_FLAGS_MEM => ALU_FLAGS_O,	    
 	    WB_CTRL_MEM	  => WB_CTRL_O,			             
 		MEM_CTRL_MEM  => MEM_CTRL_O
         );

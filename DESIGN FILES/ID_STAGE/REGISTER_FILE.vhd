@@ -6,7 +6,6 @@ library work;
 use work.records.all;
 use work.constants_pkg.all;
 
-
 entity REGISTER_FILE is
     port(
         --INPUTS
@@ -19,14 +18,16 @@ entity REGISTER_FILE is
         W_DATA      : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
         --OUTPUTS
         RS_DATA_O   : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
-        RT_DATA_O   : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0)
+        RT_DATA_O   : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
+        --OUTPUTS TO TOP
+        REGISTERS   : out REG_ARR
+        
     );
 end REGISTER_FILE;    
 
 architecture ARCH_REG_FILE OF REGISTER_FILE IS
 
 -- CUSTOM ARRAY TYPE FOR REGISTERS
-type REG_ARR is ARRAY(NUM_REG-1 DOWNTO 0) of STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal REG_FILE: REG_ARR;
 
 signal RS_INDEX: integer:=0;
@@ -37,7 +38,6 @@ begin
     
     RS_INDEX <= to_integer(unsigned(RS_IDX));
     RT_INDEX <= to_integer(unsigned(RT_IDX));
-    
     RD_INDEX <= to_integer(unsigned(RD_IDX));
     
     --Combinatorial logic for reading REG_FILE:
@@ -59,5 +59,8 @@ begin
             end if;
         end if;    
     end process;
-
+    
+    -- OUTPUTS TO TOP
+    REGISTERS <= REG_FILE;
+    
 end ARCH_REG_FILE;

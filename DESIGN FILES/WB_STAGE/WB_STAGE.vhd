@@ -13,10 +13,8 @@ use work.constants_pkg.all;
     -- 3. PROPAGATE THE REG_IDX TO THE ID STAGE.
     -- 4. PROPAGATE REG_WRITE CONTROL SIGNAL TO ID STAGE. 
 
-
 entity WB_STAGE is
     port(
-        CLK     : in STD_LOGIC;
         RESET   : in STD_LOGIC;
         REG_IDX : in STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);
         REG_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
@@ -55,10 +53,15 @@ begin
          DATA_CORRECTED <= SIGN_EXTENDED_DATA when "10",
                            UNSIGNED_DATA      when "01",
                            REG_DATA           when others;     
-                
-    
-    REG_DATA_O <= DATA_CORRECTED;
-    REG_IDX_O <= REG_IDX;
+    with RESET select
+            REG_DATA_O <= DATA_CORRECTED when '0',
+                          L32b when others;  
+    with RESET select
+            REG_IDX_O <= REG_IDX when '0',
+                         "00000" when others;
+    with RESET select
+            REG_W_CTRL <= WB_CTRL.RegWrite when '0',
+                          '0' when others;
 end WB_ARCH;
 
     

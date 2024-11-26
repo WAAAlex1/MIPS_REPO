@@ -1,0 +1,55 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;		
+use IEEE.numeric_std.all;
+
+library work;
+use work.records.all;
+use work.constants_pkg.all;
+
+
+entity BRANCH_CONTROL is
+    port(
+        -- INPUTS
+        PC_ADDR: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET:  in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        RS_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        RT_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        BRANCH_CTRL: in STD_LOGIC_VECTOR(1 DOWNTO 0);
+        
+        -- OUTPUTS
+        PC_SEL: out STD_LOGIC;
+        PC_ADDR_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+    );
+end BRANCH_CONTROL;
+
+architecture BRANCH_ARCH of BRANCH_CONTROL is
+
+-- UNSIGNED/SIGNED 32x32x32 ADDSUB MODULE.
+COMPONENT ADD32x32x32_U_S
+  PORT (
+    A : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    B : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    CE: IN STD_LOGIC; 
+    S : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) 
+  );
+END COMPONENT;
+
+signal ZERO: STD_LOGIC;
+
+begin
+
+--ADDER
+-- NEW PC_ADDR IS COMPUTED AND PUT INTO PC_ADDR_INTERNAL
+-- A IS UNSIGNED, B IS SIGNED. ALWAYS ADDING, S = A + B.
+PC_ADDER: ADD32x32x32_U_S
+  PORT MAP (
+    A => PC_ADDR,
+    B => OFFSET,
+    CE => '1',
+    S => PC_ADDR_O
+  );
+
+ZERO <= '1' when RS_DATA = RT_DATA else '0';
+PC_SEL <= (ZERO AND BRANCH_CTRL(1)) OR ((not ZERO) AND BRANCH_CTRL(0)) ;	
+
+end BRANCH_ARCH;

@@ -12,7 +12,6 @@ entity MEM_STAGE is
      	CLK			    : in STD_LOGIC;					
 		RESET			: in STD_LOGIC;					
      					     	
-		PC_ADDR   	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		M_ADDR	        : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 	    M_DATA 		    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX		: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
@@ -21,16 +20,11 @@ entity MEM_STAGE is
 		--CONTROL Inputs		
 		WB_CTRL			: in WB_CTRL_REG; 				
 		MEM_CTRL		: in MEM_CTRL_REG;				
-		ALU_FLAGS		: in ALU_FLAGS;		     	      
 		
 		--OUTPUTS	(REGISTERED)		
 		MEM_DATA_O		: out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);	
 		REG_DATA_O		: out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		REG_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
-		
-		--OUTPUTS (NOT REGISTERED)
-		PC_ADDR_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
-		PC_SRC_O        : out STD_LOGIC;
 		
 		--Control Outputs
 		WB_CTRL_O       : out WB_CTRL_REG				
@@ -71,7 +65,6 @@ begin
 
 -- COMPONENT INSTANTIATION
 MEM_BANK: MEMORY_BANK 
-    GENERIC MAP(BLOCKSIZE => MEM_SIZE)
     PORT MAP(
         RESET     => RESET,
         CLK       => CLK,
@@ -94,9 +87,5 @@ MEM_WB_REGS: MEM_WB_R
         REG_IDX_WB	 => REG_IDX_O,
         WB_CTRL_WB   => WB_CTRL_O
     );  
-    
--- OUTPUTS NOT REGISTERED
-   PC_ADDR_O <= PC_ADDR;   
-   PC_SRC_O <= (ALU_FLAGS.EQUAL AND MEM_CTRL.BRANCH(1)) OR (not ALU_FLAGS.EQUAL AND MEM_CTRL.BRANCH(0)) ;	
 
 end MEM_ARCH;
