@@ -22,5 +22,6 @@ package CONSTANTS_PKG is
 	constant L8b    : STD_LOGIC_VECTOR(7 DOWNTO 0)  :=  b"0000_0000";
 	constant H32b		: STD_LOGIC_VECTOR(31 downto 0) :=  b"1111_1111_1111_1111_1111_1111_1111_1111";	
 	constant H16b		: STD_LOGIC_VECTOR(15 downto 0) :=  b"1111_1111_1111_1111";	
+	constant H8b    : STD_LOGIC_VECTOR(7 DOWNTO 0)  :=  b"1111_1111";
 
 end CONSTANTS_PKG;

@@ -45,8 +45,7 @@ component MEMORY_BANK is
 	port(
 	    RESET     : in  std_logic;
 		CLK       : in  std_logic;
-		RE        : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
-		WE        : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+		W_R_CTRL  : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
 		ADDR      : in  std_logic_vector(INST_SIZE-1 downto 0);
 		DATA      : in  std_logic_vector(INST_SIZE-1 downto 0);
 		DATA_O    : out std_logic_vector(INST_SIZE-1 downto 0)
@@ -69,7 +68,6 @@ component MEM_WB_R is
 end component MEM_WB_R;  
 
 -- SIGNAL DECLARATIONS
-
 begin
 
 -- COMPONENT INSTANTIATION
@@ -78,8 +76,7 @@ MEM_BANK: MEMORY_BANK
     PORT MAP(
         RESET     => RESET,
         CLK       => CLK,
-        RE        => MEM_CTRL.READ,
-        WE        => MEM_CTRL.WRITE,
+        W_R_CTRL  => MEM_CTRL.W_R_CTRL,
         ADDR      => M_ADDR,
         DATA      => M_DATA,
         DATA_O    => MEM_DATA_O
@@ -97,7 +94,7 @@ MEM_WB_REGS: MEM_WB_R
         REG_DATA_WB  => REG_DATA_O,
         REG_IDX_WB	 => REG_IDX_O,
         WB_CTRL_WB   => WB_CTRL_O
-    );
+    );  
     
 -- OUTPUTS NOT REGISTERED
    PC_ADDR_O <= PC_ADDR;   

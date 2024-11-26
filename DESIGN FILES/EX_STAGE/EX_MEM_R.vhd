@@ -45,9 +45,9 @@ begin
 			RT_MEM		    <= L32b;
 			RT_RD_IDX_MEM	<= "00000";			
 			
-			ALU_FLAGS_MEM	<= ('0','0','0');
+			ALU_FLAGS_MEM	<= ('0');
 			WB_CTRL_MEM	    <= ('0',"00");
-			MEM_CTRL_MEM	<= ("00","00","00");
+			MEM_CTRL_MEM	<= ("00","00");
 			
 		elsif rising_edge(clk) then
 			PC_ADDR_MEM	    <= PC_ADDR_EX;

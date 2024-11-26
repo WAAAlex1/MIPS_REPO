@@ -19,8 +19,7 @@ entity CONTROL_UNIT is
     ALULS   :   out STD_LOGIC;
     
     --CONTROL SIGNALS FOR MEM STAGE
-    WRITE   :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
-    READ    :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    W_R_CTRL:   out STD_LOGIC_VECTOR(1 DOWNTO 0);
     Branch  :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
 
     --CONTROL SIGNALS FOR WB STAGE
@@ -68,60 +67,31 @@ begin
     
 -- USE INTERNAL SIGNALS TO SET OUTPUTS:
 
-    -- WRITE should be HIGH whenever we need to write to MEMORY
-    -- WRITE = 11 WE ARE STORING A WORD
-    -- WRITE = 01 WE ARE STORING A BYTE
-    -- WRITE = 10 WE ARE STORING A HALFWORD (NOT IMPLEMENTED)
-    -- WRITE = 00 WE ARE NOT WRITING.   
-    process(SW,SB)
-    begin
-        if(SW = '1') then
-            WRITE <= "11";
-        elsif(SB = '1') then
-            WRITE <= "01";
-        else
-            WRITE <= "00";
-        end if;
-    end process;    
+    -- W_R_CTRL = 10 WE ARE STORING A WORD
+    -- W_R_CTRL = 01 WE ARE STORING A BYTE
+    -- W_R_CTRL = 11 WE ARE LOADING A WORD
+    -- W_R_CTRL = 00 WE ARE LOADING A BYTE 
     
-    -- READ should be HIGH whenever we need to read from MEMORY
-    -- LW and LB and LBU does this.
-    -- READ should be HIGH whenever we need to READ FROM MEMORY
-    -- READ = 11 WE ARE LOADING A WORD
-    -- READ = 01 WE ARE LOADING A BYTE
-    -- READ = 10 WE ARE LOADING A HALFWORD (NOT IMPLEMENTED)
-    -- READ = 00 WE ARE NOT LOADING.  
-    process(LB,LW,LBU)
-    begin
-        if(LW = '1') then
-            READ <= "11";
-        elsif(LB = '1' OR LBU = '1') then
-            READ <= "01";
-        else
-            READ <= "00";
-        end if;
-    end process; 
+    W_R_CTRL <= "10" when SW = '1' else
+                "01" when SB = '1' else
+                "00" when LB = '1' else
+                "11" when LW = '1' else
+                "00";
     
     -- ALUSRC should be high whenever we need to use an immediate value for our ALU operation (I type instructions)
-    -- Note: Branch instructions use Immediate values BUT NOT THE ALU
-    ALUSRC <= (not R_TYPE) and (not Branch_internal);
+    -- Note: Branch instructions use Immediate values BUT NOT IMM FOR THE ALU (NEEDS BOTH REGS IN ALU)
+    ALUSRC <= (not R_TYPE) and (not (BEQ OR BNE));
     
     -- Branch should be high whenever we are handling a BRANCH instruction
     -- Branch also encodes the type of branching, used later to decided if branch taken or not. 
     -- BRANCH = 10 -> BEQ
     -- BRANCH = 01 -> BNE
     -- BRANCH = 00 -> NOT BRANCHING
-    process(BEQ, BNE)
-    begin
-        if(BEQ = '1') then
-            BRANCH <= "10";
-        elsif(BNE = '1') then
-            BRANCH <= "01";
-        else
-            BRANCH <= "00";
-        end if;
-    end process; 
     
+    BRANCH <= "10" when BEQ = '1' else
+              "01" when BNE = '1' else
+              "00";
+
     -- RegWrite should be high whenever:
         -- 1. We are handling an R-type instruction
         -- 2. I-TYPE instruction which does one of the following:
@@ -136,16 +106,11 @@ begin
         -- MemToReg = 10 WHEN SIGN_EXTENSION OF MEMORY IS NEEDED.
         -- MemToReg = 01 WHEN SIGN_EXTENSION OF MEMORY IS NOT NEEDED
         -- MemToReg = 00 WHEN WE ARE NOT TRANSFERRING MEM TO REG. 
-    process(LW, LB, LBU)
-    begin
-        if ( LW = '1' OR LB = '1') then
-            MemToReg <= "10"; -- SIGNED MEMORY
-        elsif (LBU = '1') then
-            MemToReg <= "01"; -- SIGNED MEMORY
-        else
-            MemToReg <= "00"; -- SIGNED MEMORY
-        end if;
-    end process;    
+        
+    MemToReg <= "01" when LW = '1' else
+                "10" when LB = '1' else
+                "01" when LBU = '1' else
+                "00";     
     
     --ALUTYPE DESCRIBES WHAT INSTRUCTION TYPE WE ARE DEALING WITH
     -- '1' FOR R TYPE

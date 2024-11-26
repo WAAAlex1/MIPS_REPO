@@ -7,9 +7,9 @@ package RECORDS is
     
     -- ALU_OPSELECT ENCODED
     type ALU_OPSELECT is (ADDU, ADDS, SUBU, SUBS, AND0, OR0, SLTU, SLTS, SLL0, SRL0, SL16);
-	
-	type INSTR_TYPE   is (ADD,ADDU,ADDI,AND0,ANDI,OR0,ORI,SLL0,SRL0,SUB,SUBU,SLT,SLTU,BEQ,BNQ,LB,LBU,LW,LUI,SB,SW);
-	
+    
+    
+    	
 	type ALU_FLAGS is
     record
         --LESS        :   STD_LOGIC;
@@ -27,8 +27,10 @@ package RECORDS is
     type MEM_CTRL_REG is
     record
         Branch		:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 01 for BNE, 10 for BEQ, 00 for not branching
-        READ		:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 11 For reading word, 01 for reading byte, 00 not reading	
-        WRITE	    :	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 11 For writing word, 01 for writing byte, 00 not writing	
+        W_R_CTRL	:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 00 Reading BYTE, 
+                                                       -- 01 Writing BYTE, 
+                                                       -- 10 Writing WORD,
+                                                       -- 11 Reading WORD	
     end record;
     
     type WB_CTRL_REG is
