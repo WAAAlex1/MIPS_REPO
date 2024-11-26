@@ -106,13 +106,13 @@ component CONTROL_UNIT is
     ALULS   :   out STD_LOGIC;
     
     --CONTROL SIGNALS FOR MEM STAGE
-    WRITE   :   out STD_LOGIC;
-    READ    :   out STD_LOGIC;
-    Branch  :   out STD_LOGIC;
+    WRITE   :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    READ    :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    BRANCH  :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
 
     --CONTROL SIGNALS FOR WB STAGE
     RegWrite:   out STD_LOGIC;
-    MemToReg:   out STD_LOGIC
+    MemToReg:   out STD_LOGIC_VECTOR(1 DOWNTO 0)
     );
 end component CONTROL_UNIT;
 

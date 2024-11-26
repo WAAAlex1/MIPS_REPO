@@ -19,13 +19,13 @@ entity CONTROL_UNIT is
     ALULS   :   out STD_LOGIC;
     
     --CONTROL SIGNALS FOR MEM STAGE
-    WRITE   :   out STD_LOGIC;
-    READ    :   out STD_LOGIC;
-    Branch  :   out STD_LOGIC;
+    WRITE   :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    READ    :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
+    Branch  :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
 
     --CONTROL SIGNALS FOR WB STAGE
     RegWrite:   out STD_LOGIC;
-    MemToReg:   out STD_LOGIC
+    MemToReg:   out STD_LOGIC_VECTOR(1 DOWNTO 0)
     );
 end CONTROL_UNIT;
 
@@ -46,8 +46,6 @@ architecture ARCH_CU of CONTROL_UNIT is
    signal SLL0: STD_LOGIC;
    signal SRL0: STD_LOGIC;
    signal R_TYPE: STD_LOGIC;
-   signal branch_internal: STD_LOGIC;
-   signal write_internal: STD_LOGIC;
 begin
     
 -- USE OPCODE TO SET INTERNAL SIGNALS
@@ -63,30 +61,66 @@ begin
     LUI     <= '1' when OPCODE = "001111" else '0';
     SB      <= '1' when OPCODE = "101000" else '0';
     SW      <= '1' when OPCODE = "101011" else '0';
-    SLL0      <= '1' when FUNCT = "000000" else '0';
-    SRL0      <= '1' when FUNCT = "000010" else '0';
+    SLL0    <= '1' when FUNCT  = "000000" else '0';
+    SRL0    <= '1' when FUNCT  = "000010" else '0';
 
     R_TYPE  <= '1' when OPCODE = "000000" else '0'; --When opcode = 0 must be R-type
     
-   
 -- USE INTERNAL SIGNALS TO SET OUTPUTS:
-   
+
     -- WRITE should be HIGH whenever we need to write to MEMORY
-    -- SW and SB does this.
-    Write_internal <= SW OR SB;
-    WRITE <= Write_internal;
+    -- WRITE = 11 WE ARE STORING A WORD
+    -- WRITE = 01 WE ARE STORING A BYTE
+    -- WRITE = 10 WE ARE STORING A HALFWORD (NOT IMPLEMENTED)
+    -- WRITE = 00 WE ARE NOT WRITING.   
+    process(SW,SB)
+    begin
+        if(SW = '1') then
+            WRITE <= "11";
+        elsif(SB = '1') then
+            WRITE <= "01";
+        else
+            WRITE <= "00";
+        end if;
+    end process;    
     
     -- READ should be HIGH whenever we need to read from MEMORY
     -- LW and LB and LBU does this.
-    READ <= LW OR LB OR LBU;
+    -- READ should be HIGH whenever we need to READ FROM MEMORY
+    -- READ = 11 WE ARE LOADING A WORD
+    -- READ = 01 WE ARE LOADING A BYTE
+    -- READ = 10 WE ARE LOADING A HALFWORD (NOT IMPLEMENTED)
+    -- READ = 00 WE ARE NOT LOADING.  
+    process(LB,LW,LBU)
+    begin
+        if(LW = '1') then
+            READ <= "11";
+        elsif(LB = '1' OR LBU = '1') then
+            READ <= "01";
+        else
+            READ <= "00";
+        end if;
+    end process; 
     
     -- ALUSRC should be high whenever we need to use an immediate value for our ALU operation (I type instructions)
     -- Note: Branch instructions use Immediate values BUT NOT THE ALU
     ALUSRC <= (not R_TYPE) and (not Branch_internal);
     
     -- Branch should be high whenever we are handling a BRANCH instruction
-    Branch_internal <= BEQ or BNE;
-    Branch <= Branch_internal;
+    -- Branch also encodes the type of branching, used later to decided if branch taken or not. 
+    -- BRANCH = 10 -> BEQ
+    -- BRANCH = 01 -> BNE
+    -- BRANCH = 00 -> NOT BRANCHING
+    process(BEQ, BNE)
+    begin
+        if(BEQ = '1') then
+            BRANCH <= "10";
+        elsif(BNE = '1') then
+            BRANCH <= "01";
+        else
+            BRANCH <= "00";
+        end if;
+    end process; 
     
     -- RegWrite should be high whenever:
         -- 1. We are handling an R-type instruction
@@ -98,7 +132,20 @@ begin
     
     -- MemToReg should be high whenever we are reading a value in mem and storing it in a register. 
         -- This is the same as READ (we have no instructions reading from memory which does not store to reg)
-    MemToReg <= LW OR LB OR LBU;  
+        
+        -- MemToReg = 10 WHEN SIGN_EXTENSION OF MEMORY IS NEEDED.
+        -- MemToReg = 01 WHEN SIGN_EXTENSION OF MEMORY IS NOT NEEDED
+        -- MemToReg = 00 WHEN WE ARE NOT TRANSFERRING MEM TO REG. 
+    process(LW, LB, LBU)
+    begin
+        if ( LW = '1' OR LB = '1') then
+            MemToReg <= "10"; -- SIGNED MEMORY
+        elsif (LBU = '1') then
+            MemToReg <= "01"; -- SIGNED MEMORY
+        else
+            MemToReg <= "00"; -- SIGNED MEMORY
+        end if;
+    end process;    
     
     --ALUTYPE DESCRIBES WHAT INSTRUCTION TYPE WE ARE DEALING WITH
     -- '1' FOR R TYPE
@@ -106,8 +153,8 @@ begin
     -- NOTICE THAT J-TYPE INSTRUCTIONS ARE NOT INCLUDED IN THIS LIMITED INSTRUCTION SET.
     ALUTYPE <= R_TYPE; 
     
-    --ALULS IS A SPECIAL CASE -> WHEN SHIFTING LEFT WE WANT TO SET SOURCE 1 OF THE ALU TO OFFSET
-    -- AND SOURCE 2 TO RT_DATA. THIS CONTROLSIGNAL IS USED TO SET SOURCE 1 PROPERLY.
+    --ALULS IS A SPECIAL CASE -> WHEN LOGICAL SHIFTING WE WANT TO SET SOURCE 1 OF THE ALU TO OFFSET
+    --AND SOURCE 2 TO RT_DATA. THIS CONTROLSIGNAL IS USED TO SET SOURCE 1 PROPERLY IN THE EX STAGE.
     ALULS <= R_TYPE and (SLL0 OR SRL0);
     
 end ARCH_CU;

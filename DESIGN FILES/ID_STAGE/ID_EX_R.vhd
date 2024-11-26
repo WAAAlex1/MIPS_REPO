@@ -53,8 +53,8 @@ begin
 				RD_IDX_O		<= (others => '0');
 				RS_DATA_O	 	<= (others => '0');
 				RT_DATA_O 		<= (others => '0');
-				WB_CTRL_O		<= ('0','0');
-				MEM_CTRL_O		<= ('0','0','0');
+			    WB_CTRL_O	    <= ('0',"00");
+			    MEM_CTRL_O	    <= ("00","00","00");
 				EX_CTRL_O		<= ('0','0','0');
 		elsif rising_edge(CLK) then
 		        -- DIRECTLY PROPAGATED FROM IF
