@@ -41,7 +41,6 @@ architecture MEM_ARCH of MEM_STAGE is
 
 -- COMPONENT DECLARATIONS
 component MEMORY_BANK is
-    generic(BLOCKSIZE: NATURAL);
 	port(
 	    RESET     : in  std_logic;
 		CLK       : in  std_logic;
