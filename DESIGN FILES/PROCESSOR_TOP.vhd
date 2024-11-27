@@ -18,6 +18,7 @@ entity PROCESSOR_TOP is
         CLK: in STD_LOGIC;
         RESET: in STD_LOGIC;
         PROG_SEL: in STD_LOGIC_VECTOR(2 DOWNTO 0);
+        INSTRUCTION: in STD_LOGIC_VECTOR(31 DOWNTO 0);
         
         REGISTERS: out REG_ARR
     );
@@ -112,7 +113,9 @@ component MEM_STAGE is
 		REG_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
 		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG				
+		WB_CTRL_O       : out WB_CTRL_REG;	
+		MEM_CTRL_O		: out MEM_CTRL_REG;
+		byte_idx_O      : out STD_LOGIC_VECTOR(1 DOWNTO 0)				
 	);
 end component MEM_STAGE;
 
@@ -123,6 +126,8 @@ component WB_STAGE is
         REG_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         MEM_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         WB_CTRL : in WB_CTRL_REG;
+        MEM_CTRL: in MEM_CTRL_REG;
+        byte_idx: in STD_LOGIC_VECTOR(1 DOWNTO 0);
         
         REG_DATA_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         REG_IDX_O : out STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);
@@ -156,6 +161,8 @@ signal MEM_DATA_MEM_WB	: STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);
 signal REG_DATA_MEM_WB  : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 signal REG_IDX_MEM_WB   : STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 signal WB_CTRL_MEM_WB   : WB_CTRL_REG;
+signal MEM_CTRL_MEM_WB  : MEM_CTRL_REG;
+signal byte_idx_MEM_WB  : STD_LOGIC_VECTOR(1 DOWNTO 0);
 
 -- SIGNALS FROM WB
 signal REG_W_CTRL_WB_ID: STD_LOGIC;
@@ -171,7 +178,7 @@ MIPS_ID: ID_STAGE port map(
      	
      	-- FROM IF STAGE				     	
 		PC_ADDR   	    => L32b,		
-		INSTRUCTION	    => L32b,		
+		INSTRUCTION	    => INSTRUCTION,		
 	    
 	    -- FROM WB STAGE
 	    RegWrite        => REG_W_CTRL_WB_ID,		
@@ -244,7 +251,9 @@ MIPS_MEM: MEM_STAGE port map (
 		REG_IDX_O	    => REG_IDX_MEM_WB,	
 		
 		--Control Outputs
-		WB_CTRL_O       => WB_CTRL_MEM_WB		
+		WB_CTRL_O       => WB_CTRL_MEM_WB,
+		MEM_CTRL_O		=> MEM_CTRL_MEM_WB,
+		byte_idx_O      => byte_idx_MEM_WB		
         );
         
 MIPS_WB: WB_STAGE port map(
@@ -254,6 +263,9 @@ MIPS_WB: WB_STAGE port map(
         REG_DATA        => REG_DATA_MEM_WB,
         MEM_DATA        => MEM_DATA_MEM_WB,
         WB_CTRL         => WB_CTRL_MEM_WB,
+        MEM_CTRL        => MEM_CTRL_MEM_WB,
+        byte_idx        => byte_idx_MEM_WB,
+        
         -- OUTPUTS
         REG_DATA_O      => REG_DATA_WB_ID,
         REG_IDX_O       => REG_IDX_WB_ID,

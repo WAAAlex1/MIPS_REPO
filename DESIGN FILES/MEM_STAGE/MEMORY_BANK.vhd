@@ -30,19 +30,13 @@ architecture arch of MEMORY_BANK is
     -- Memory is 32 bit cells.
         -- BOTH READ AND WRITE:
             -- We need to right shift addr by 2 to access the actual address.
-            -- MIPS Memory is byte-addressable. Need to be able to store and load from any given byte.
-        
+            -- MIPS Memory is byte-addressable. Need to be able to storebyte and loadbyte from any given byte.
+            -- Store word and load word are however required to target an address mod 4 = 0 
+            
         -- READ:
         -- If reading a BYTE:
-           -- Save the two lower bit -> these dictate which byte of the word we are interested in
-           -- If 00 -> simply mask result with OR 00_00_00_FF
-           -- If 01 -> Shift result left by 8.  Then OR-mask with 00_00_00_FF
-           -- If 10 -> Shift result left by 16. Then OR-mask with 00_00_00_FF
-           -- If 11 -> Shift result left by 24. Then Or-mask with 00_00_00_FF
-           -- WB STAGE: Determine whether necessary to sign-extend.  
-          
-        -- If reading a WORD:
-           -- No special case needed. 
+           -- THIS NEEDS TO BE DEALT WITH IN WB STAGE
+           -- AS READING HAS A LATENCY OF 1 PERIOD. 
     
         -- WRITE:
         -- If writing a byte:
@@ -71,21 +65,18 @@ architecture arch of MEMORY_BANK is
     -- 0100 FOR WRITING TO BYTE 2
     -- 1000 FOR WRITING TO BYTE 3
     -- 1111 FOR WRITING A WHOLE WORD. 
+    signal WRITE_ENABLE_helper: STD_LOGIC_VECTOR(3 DOWNTO 0);
     
     signal data_shift0: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
     signal data_shift8: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 	signal data_shift16: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 	signal data_shift24: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 	
-	signal corrected_data_w: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	
+	signal corrected_data_to_mem: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+    signal corrected_data_to_mem_helper: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+    
 	signal mem_data_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	signal data_shift0_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-    signal data_shift8_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	signal data_shift16_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	signal data_shift24_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	signal corrected_data_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-	
+		
 begin
 
     -- SIGNALS FOR CORRECTING ADDRESS
@@ -99,69 +90,28 @@ begin
     data_shift16 <= DATA(15 DOWNTO 0)&L16b;
     data_shift24 <= DATA(7 DOWNTO 0)&L16b&L8b;
     -- Process for selecting the corrected DATA INPUT.
-    process(DATA, W_R_CTRL, byte_index)
-    begin
-        if (W_R_CTRL = "01") then -- WRITE BYTE
-           CASE byte_index is
-                when "00" => 
-                   corrected_data_w <= data_shift0;
-                   WRITE_ENABLE <= "0001";
-                when "01" => 
-                   corrected_data_w <= data_shift8;
-                   WRITE_ENABLE <= "0010";
-                when "10" => 
-                   corrected_data_w <= data_shift16;
-                   WRITE_ENABLE <= "0100";
-                when "11" => 
-                   corrected_data_w <= data_shift24;
-                   WRITE_ENABLE <= "1000"; 
-                when others => 
-                   corrected_data_w <= DATA;
-                   WRITE_ENABLE <= "0001";
-            end CASE;   
-        elsif (W_R_CTRL = "00") then -- READ BYTE
-            corrected_data_w <= DATA;
-            WRITE_ENABLE <= "0000";
-        elsif (W_R_CTRL = "10") then -- WRITE WORD
-            corrected_data_w <= DATA;
-            WRITE_ENABLE <= "1111";
-        else                         -- READ WORD
-            corrected_data_w <= DATA;
-            WRITE_ENABLE <= "0000";
-        end if;
-    end process;
     
-    -- SIGNALS FOR CORRECTING DATA READ OUTPUT
-    data_shift0_O  <= mem_data_O;
-    data_shift8_O  <= L8b&mem_data_O(31 DOWNTO 8);
-    data_shift16_O <= L16b&mem_data_O(31 DOWNTO 16);
-    data_shift24_O <= L8b&L16b&mem_data_O(31 DOWNTO 24);
-    -- Process for selecting the corrected DATA OUTPUT.
-    process(mem_data_O, W_R_CTRL, byte_index)
-    begin
-        if (W_R_CTRL = "00") then -- READ BYTE
-           CASE byte_index is
-                when "00" => 
-                   corrected_data_O <= data_shift0_O;
-                when "01" => 
-                   corrected_data_O <= data_shift8_O;
-                when "10" => 
-                   corrected_data_O <= data_shift16_O;
-                when "11" => 
-                   corrected_data_O <= data_shift24_O;
-                when others => 
-                   corrected_data_O <= mem_data_O;
-            end CASE;   
-        elsif (W_R_CTRL = "01") then -- WRITE BYTE
-            corrected_data_O <= mem_data_O;
-        elsif (W_R_CTRL = "10") then -- WRITE WORD
-            corrected_data_O <= mem_data_O;
-        else                         -- READ WORD
-            corrected_data_O <= mem_data_O;
-        end if;
-    end process;
-    -- FINAL OUTPUT ASSIGNMENT
-    DATA_O <= corrected_data_O;
+    with byte_index select
+        WRITE_ENABLE_helper <= "0010" when "01",
+                               "0100" when "10",
+                               "1000" when "11",
+                               "0001" when others;
+
+    with byte_index select
+        corrected_data_to_mem_helper <= 
+                data_shift0     when "00",
+                data_shift8     when "01",
+                data_shift16    when "10",
+                data_shift24    when "11",
+                DATA            when others;
+
+    with W_R_CTRL select
+        WRITE_ENABLE <= WRITE_ENABLE_helper when "01",
+                        "0000" when "00",
+                        "1111" when "10",
+                        "0000" when others;
+    
+    corrected_data_to_mem <= corrected_data_to_mem_helper when W_R_CTRL = "01" else DATA;
     
 -- xpm_memory_spram: Single Port RAM
 -- Xilinx Parameterized Macro, version 2024.2
@@ -204,7 +154,7 @@ port map (
 
    addra => corrected_addr,        -- ADDR_WIDTH_A-bit input: Address for port A write and read operations.
    clka => CLK,                     -- 1-bit input: Clock signal for port A.
-   dina => corrected_data_w,       -- WRITE_DATA_WIDTH_A-bit input: Data input for port A write operations.
+   dina => corrected_data_to_mem,       -- WRITE_DATA_WIDTH_A-bit input: Data input for port A write operations.
    ena => '1',                       -- 1-bit input: Memory enable signal for port A. Must be high on clock
                                      -- cycles when read or write operations are initiated. Pipelined
                                      -- internally.
@@ -234,7 +184,8 @@ port map (
 
 );
 
-
+-- FINAL OUTPUT ASSIGNMENT
+    DATA_O <= mem_data_o;
 
   	
 end arch;	

@@ -103,13 +103,14 @@ begin
     -- MemToReg should be high whenever we are reading a value in mem and storing it in a register. 
         -- This is the same as READ (we have no instructions reading from memory which does not store to reg)
         
+        -- MemToReg = 11 When reading full word -> no sign extension
         -- MemToReg = 10 WHEN SIGN_EXTENSION OF MEMORY IS NEEDED.
         -- MemToReg = 01 WHEN SIGN_EXTENSION OF MEMORY IS NOT NEEDED
         -- MemToReg = 00 WHEN WE ARE NOT TRANSFERRING MEM TO REG. 
         
-    MemToReg <= "01" when LW = '1' else
+    MemToReg <= "01" when LBU = '1' else
                 "10" when LB = '1' else
-                "01" when LBU = '1' else
+                "11" when LW = '1' else
                 "00";     
     
     --ALUTYPE DESCRIBES WHAT INSTRUCTION TYPE WE ARE DEALING WITH

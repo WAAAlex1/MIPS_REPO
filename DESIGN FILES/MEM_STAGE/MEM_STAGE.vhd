@@ -27,7 +27,9 @@ entity MEM_STAGE is
 		REG_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
 		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG				
+		WB_CTRL_O       : out WB_CTRL_REG;
+		MEM_CTRL_O		: out MEM_CTRL_REG;
+		byte_idx_O      : out STD_LOGIC_VECTOR(1 DOWNTO 0)		
 	);
 end MEM_STAGE;
 
@@ -52,11 +54,15 @@ component MEM_WB_R is
         
         REG_DATA_MEM : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
         REG_IDX_MEM	 : in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
-        WB_CTRL_MEM  : in WB_CTRL_REG;	
-        
+        WB_CTRL_MEM  : in WB_CTRL_REG;
+        MEM_CTRL_MEM : in MEM_CTRL_REG;	
+        byte_idx_MEM : in STD_LOGIC_VECTOR(1 DOWNTO 0);		
+	        
         REG_DATA_WB  : out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
         REG_IDX_WB	 : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
-        WB_CTRL_WB   : out WB_CTRL_REG
+        WB_CTRL_WB   : out WB_CTRL_REG;
+        MEM_CTRL_WB	 : out MEM_CTRL_REG;	
+        byte_idx_WB  : out STD_LOGIC_VECTOR(1 DOWNTO 0)	
     );
 end component MEM_WB_R;  
 
@@ -74,6 +80,8 @@ MEM_BANK: MEMORY_BANK
         DATA_O    => MEM_DATA_O
 );
 
+
+
 MEM_WB_REGS: MEM_WB_R 
     PORT MAP(
         CLK          => CLK,
@@ -82,10 +90,15 @@ MEM_WB_REGS: MEM_WB_R
         REG_DATA_MEM => REG_DATA,
         REG_IDX_MEM	 => RT_RD_IDX,
         WB_CTRL_MEM  => WB_CTRL,
+        MEM_CTRL_MEM => MEM_CTRL,
+        byte_idx_MEM => M_ADDR(1 DOWNTO 0),
         
         REG_DATA_WB  => REG_DATA_O,
         REG_IDX_WB	 => REG_IDX_O,
-        WB_CTRL_WB   => WB_CTRL_O
+        WB_CTRL_WB   => WB_CTRL_O,
+        MEM_CTRL_WB => MEM_CTRL_O,
+        byte_idx_WB => byte_idx_O
+        
     );  
 
 end MEM_ARCH;

@@ -28,7 +28,11 @@ package RECORDS is
     type WB_CTRL_REG is
 	record
 		RegWrite	:	STD_LOGIC;	
-		MemtoReg	:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 10 For sign extend, 01 for no sign extend, 00 no MemToReg.	  
+		MemtoReg	:	STD_LOGIC_VECTOR(1 DOWNTO 0);  -- 11 for full word -> no extend, 
+		                                               -- 10 For byte sign extended, 
+		                                               -- 01 for byte unsigned, 
+		                                               -- 00 for not reading from MEM.	  
+		
     end record;
     
     
