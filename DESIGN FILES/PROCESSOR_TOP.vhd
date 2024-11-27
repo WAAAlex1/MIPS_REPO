@@ -17,8 +17,7 @@ entity PROCESSOR_TOP is
     port(
         CLK: in STD_LOGIC;
         RESET: in STD_LOGIC;
-        PROG_SEL: in STD_LOGIC_VECTOR(2 DOWNTO 0);
-        INSTRUCTION: in STD_LOGIC_VECTOR(31 DOWNTO 0);
+        PROG_SEL: in STD_LOGIC_VECTOR(1 DOWNTO 0);
         
         REGISTERS: out REG_ARR
     );
@@ -178,7 +177,7 @@ MIPS_ID: ID_STAGE port map(
      	
      	-- FROM IF STAGE				     	
 		PC_ADDR   	    => L32b,		
-		INSTRUCTION	    => INSTRUCTION,		
+		INSTRUCTION	    => L32B,		
 	    
 	    -- FROM WB STAGE
 	    RegWrite        => REG_W_CTRL_WB_ID,		

@@ -58,6 +58,7 @@ dut: PROCESSOR_TOP port map(
 		RESET		    <= '1';		     	
 		INSTRUCTION	    <= b"000000_00000_00000_00000_00000_100000"; -- add r0, r0, r0  -- NOP				
      	wait for period;
+     	-----THE FOLLOWING INSTRUCTIONS ARE AIMED AT TESTING MEMORY------
      	RESET           <= '0';
 		INSTRUCTION	    <= b"101011_00000_00001_00000_00000_100000"; -- SW r1, 32(r0)		
         wait for period;
@@ -94,6 +95,15 @@ dut: PROCESSOR_TOP port map(
 		INSTRUCTION	    <= b"101000_00000_00100_00000_00000_101111"; -- SB r4, 47(r0)
 		wait for period;
 		INSTRUCTION	    <= b"100011_00000_01100_00000_00000_101100"; -- LW r12, 44(r0)
+		wait for period;
+		-----THE FOLLOWING INSTRUCTIONS ARE AIMED AT TESTING BRANCHING------
+		INSTRUCTION	    <= b"000100_00001_00101_00000_00000_001010"; -- BEQ r1, r5, 10
+		wait for period;
+		INSTRUCTION	    <= b"000100_00001_00010_00000_00000_010100"; -- BEQ r1, r2, 20
+		wait for period;
+		INSTRUCTION	    <= b"000101_00001_00101_00000_00000_001010"; -- BNE r1, r5, 10
+		wait for period;
+		INSTRUCTION	    <= b"000101_00001_00010_00000_00000_010100"; -- BNE r1, r2, 20
 		wait for 5*period;
         reset <= '1';
         wait;
