@@ -27,6 +27,20 @@ architecture ARCH_P_TOP of PROCESSOR_TOP is
 
 -- DECLARE COMPONENTS
 
+component IF_STAGE is
+    port(
+        --INPUTS
+        CLK          : in STD_LOGIC;                                                                          
+        RESET        : in STD_LOGIC;                                                                                                                                                                                                
+        BRANCH_PC    : in STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);           
+        RESET_PC     : in STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);
+        PC_SEL       : in STD_LOGIC;                                                    
+        --OUTPUTS        (REGISTERED)                 
+        MEM_DATA_O   : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);
+        PC_o         : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+        );
+end component IF_STAGE;
+
 component ID_STAGE is
 	port( 
 		--INPUTS
@@ -136,6 +150,10 @@ end component WB_STAGE;
 
 -- SIGNALS FOR INTERCONNECTING THE COMPONENTS:
 
+-- SIGNALS FROM IF
+signal INSTRUCTION_IF_ID:	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);		
+signal PC_ADDR_IF_ID    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);	
+
 -- SIGNALS FROM ID
 signal OFFSET_ID_EX     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);		
 signal RS_DATA_ID_EX    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);		
@@ -168,7 +186,28 @@ signal REG_W_CTRL_WB_ID: STD_LOGIC;
 signal REG_DATA_WB_ID: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal REG_IDX_WB_ID: STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);
 
+-- SIGNALS FOR CREATING THE PC WHEN RESET
+signal RESET_PC: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+
 begin
+
+
+with PROG_SEL SELECT RESET_PC <= (others => '0') when "00",
+                                    x"0000_0000" when "01",
+                                    x"0000_0000" when "10",
+                                    x"0000_0000" when others;
+
+MIPS_IF: IF_STAGE port map(
+        --INPUTS
+        CLK          => CLK,                                                                 
+        RESET        => RESET,                                                                                                                                                  
+        BRANCH_PC    => PC_ADDR_ID_IF,       
+        RESET_PC     => RESET_PC,      
+        PC_SEL       => PC_SEL_ID_IF,                                    
+        --OUTPUTS    (REGISTERED)                 
+        MEM_DATA_O   => INSTRUCTION_IF_ID,      
+        PC_o         => PC_ADDR_IF_ID     
+        );
 
 MIPS_ID: ID_STAGE port map(
         --INPUTS
@@ -176,8 +215,8 @@ MIPS_ID: ID_STAGE port map(
 		RESET			=> RESET,			
      	
      	-- FROM IF STAGE				     	
-		PC_ADDR   	    => L32b,		
-		INSTRUCTION	    => L32B,		
+		PC_ADDR   	    => PC_ADDR_IF_ID,		
+		INSTRUCTION	    => INSTRUCTION_IF_ID,		
 	    
 	    -- FROM WB STAGE
 	    RegWrite        => REG_W_CTRL_WB_ID,		

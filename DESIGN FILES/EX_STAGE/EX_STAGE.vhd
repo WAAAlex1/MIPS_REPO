@@ -58,7 +58,7 @@ component EX_MEM_REGISTERS is
     port(
 		-- INPUTS USED FOR THE REGISTER ITSELF
 		clk		        :	in STD_LOGIC;					             -- CLK
-		RESET		    :	in STD_LOGIC;					             -- Asynchronous 
+		RESET		    :	in STD_LOGIC;					             -- Synchronous
 		
 		-- INPUTS PROPAGATED THROUGH REGISTER
 		ALU_RES_EX	    :	in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	 -- Result of ALU

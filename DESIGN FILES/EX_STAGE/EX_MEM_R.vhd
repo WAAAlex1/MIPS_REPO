@@ -32,25 +32,24 @@ end EX_MEM_REGISTERS;
 
 architecture ARCH_EX_MEM_REGS of EX_MEM_REGISTERS is        
 begin 
-
 	  process(CLK,RESET)
 	  begin
-		if RESET = '1' then 	
-			ALU_RES_MEM	    <= L32b;
-			RT_MEM		    <= L32b;
-			RT_RD_IDX_MEM	<= "00000";			
-			
-			WB_CTRL_MEM	    <= ('0',"00");
-			MEM_CTRL_MEM.W_R_CTRL <= "00";
-			
-		elsif rising_edge(clk) then
-			ALU_RES_MEM	    <= ALU_RES_EX;
-			RT_MEM		    <= RT_EX;
-			RT_RD_IDX_MEM   <= RT_RD_IDX_EX;
-			
-			WB_CTRL_MEM	    <= WB_CTRL_EX;
-			MEM_CTRL_MEM	<= MEM_CTRL_EX;
-			
+		if rising_edge(clk) then
+		  if RESET = '1' then 	          
+            ALU_RES_MEM	    <= L32b;      
+            RT_MEM		    <= L32b;          
+            RT_RD_IDX_MEM	<= "00000";			  
+                                          
+            WB_CTRL_MEM	    <= ('0',"00");
+            MEM_CTRL_MEM.W_R_CTRL <= "00";
+		  else 
+            ALU_RES_MEM	    <= ALU_RES_EX;
+            RT_MEM		    <= RT_EX;
+            RT_RD_IDX_MEM   <= RT_RD_IDX_EX;
+            
+            WB_CTRL_MEM	    <= WB_CTRL_EX;
+            MEM_CTRL_MEM	<= MEM_CTRL_EX;
+	      end if;		
 		end if;
 	  end process; 
 

@@ -47,18 +47,18 @@ begin
     -- PROCESS FOR WRITING TO REG_FILE AND RESETTING REG FILE.
     process(clk,RESET,W_DATA,RD_INDEX)
     begin
-        if(RESET = '1') THEN -- ASYNCHRONOUS RESET.
-            for i in 6 to REG_ARR'High loop
-                REG_FILE(i) <= (others=>'0');
-                REG_FILE(0) <= (others=>'0');
-                REG_FILE(1) <= x"0F_0F_0F_0F";
-                REG_FILE(2) <= x"F0_F0_F0_F0";
-                REG_FILE(3) <= x"11_44_C0_AB";
-                REG_FILE(4) <= x"00_00_00_20";
-                REG_FILE(5) <= x"0F_0F_0F_0F";
-            end loop;
-        elsif rising_edge(clk) then
-            if RegWrite = '1' then
+        if rising_edge(clk) then
+            if(RESET = '1') THEN -- ASYNCHRONOUS RESET.
+                for i in 6 to REG_ARR'High loop
+                    REG_FILE(i) <= (others=>'0');
+                    REG_FILE(0) <= (others=>'0');
+                    REG_FILE(1) <= x"0F_0F_0F_0F";
+                    REG_FILE(2) <= x"F0_F0_F0_F0";
+                    REG_FILE(3) <= x"11_44_C0_AB";
+                    REG_FILE(4) <= x"00_00_00_20";
+                    REG_FILE(5) <= x"0F_0F_0F_0F";
+                end loop;
+            elsif RegWrite = '1' then
                 if(RD_INDEX /= 0) then -- Ensuring that REG0 can never be touched
                     REG_FILE(RD_INDEX) <= W_DATA;
                 end if;    

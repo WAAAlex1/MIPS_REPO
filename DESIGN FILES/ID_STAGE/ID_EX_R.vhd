@@ -40,7 +40,8 @@ architecture ARCH_ID_EX_REGS of ID_EX_REGISTERS IS
 begin
     process(CLK,RESET,OFFSET_IN,RT_IDX_IN,RD_IDX_IN,RS_DATA_IN,RT_DATA_IN,WB_CTRL_IN,MEM_CTRL_IN,EX_CTRL_IN)
 	  begin
-		if RESET = '1' then -- ASYNCHRONOUS RESET
+		if rising_edge(CLK) then
+		  if RESET = '1' then -- SYNCHRONOUS RESET
 				OFFSET_O		<= (others => '0');
 				RT_IDX_O		<= (others => '0');
 				RD_IDX_O		<= (others => '0');
@@ -49,7 +50,7 @@ begin
 			    WB_CTRL_O	    <= ('0',"00");
 			    MEM_CTRL_O.W_R_CTRL	<= "00";
 				EX_CTRL_O		<= ('0','0','0',ADDU);
-		elsif rising_edge(CLK) then
+		  else
 				-- SIGNALS CREATED IN ID STAGE
 				-- DATA FROM REGISTERS
 				RS_DATA_O	 	<= RS_DATA_IN;
@@ -63,8 +64,9 @@ begin
 				WB_CTRL_O		<= WB_CTRL_IN;
 				MEM_CTRL_O		<= MEM_CTRL_IN;
 				EX_CTRL_O		<= EX_CTRL_IN;
-		end if;
-	  end process;
+		  end if;
+      end if;  		
+    end process;
 
 END ARCH_ID_EX_REGS;
 

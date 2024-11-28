@@ -29,18 +29,20 @@ architecture MEM_WB_R_ARCH of MEM_WB_R is
 begin
     process(CLK,RESET)
 	  begin
-		if RESET = '1' then 	
+		if rising_edge(clk) then
+		  if RESET = '1' then 	
 			REG_DATA_WB	    <= L32b;
 			REG_IDX_WB		<= "00000";
 			WB_CTRL_WB	    <= ('0',"00");		
 			MEM_CTRL_WB.W_R_CTRL <= "00";
 			byte_idx_WB     <= "00";
-		elsif rising_edge(clk) then
+	      else		
 			REG_DATA_WB	    <= REG_DATA_MEM;
 			REG_IDX_WB		<= REG_IDX_MEM;
 			WB_CTRL_WB	    <= WB_CTRL_MEM;
 			MEM_CTRL_WB     <= MEM_CTRL_MEM;
 			byte_idx_WB     <= byte_idx_MEM;
+	      end if;		
 		end if;
 	  end process; 
 
