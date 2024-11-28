@@ -27,24 +27,22 @@ component TOP_LEVEL is
 end component TOP_LEVEL;
 
 signal CLK: STD_LOGIC;
-signal RESET: STD_LOGIC;
-signal PROG_SEL: STD_LOGIC_VECTOR(2 DOWNTO 0);
-signal INSTRUCTION: STD_LOGIC_VECTOR(31 downto 0);
-signal REGISTERS: REG_ARR;
+signal SWITCHES: STD_LOGIC_VECTOR(15 DOWNTO 0);
+signal LEDS: STD_LOGIC_VECTOR(15 DOWNTO 0);
+signal SEV_SEG_DATA: STD_LOGIC_VECTOR(7 downto 1);
+signal SEV_SEG_CTRL: STD_LOGIC_VECTOR(4 DOWNTO 1);
 
 begin
 
-dut: PROCESSOR_TOP port map(
+dut: TOP_LEVEL port map(
 
     CLK => CLK,
-    RESET => RESET,
-    PROG_SEL => PROG_SEL,
-    INSTRUCTION => INSTRUCTION,
-    REGISTERS => REGISTERS
+    SWITCHES => SWITCHES,
+    LEDS => LEDS,
+    SEV_SEG_DATA => SEV_SEG_DATA,
+    SEV_SEG_CTRL => SEV_SEG_CTRL
     
 );
-
-    PROG_SEL <= "000";
 
     process
     begin
@@ -56,57 +54,9 @@ dut: PROCESSOR_TOP port map(
     
     process
     begin			
-		RESET		    <= '1';		     	
-		INSTRUCTION	    <= b"000000_00000_00000_00000_00000_100000"; -- add r0, r0, r0  -- NOP				
-     	wait for period;
-     	-----THE FOLLOWING INSTRUCTIONS ARE AIMED AT TESTING MEMORY------
-     	RESET           <= '0';
-		INSTRUCTION	    <= b"101011_00000_00001_00000_00000_100000"; -- SW r1, 32(r0)		
-        wait for period;
-		INSTRUCTION	    <= b"101011_00000_00010_00000_00000_100100"; -- SW r2, 36(r0)	
-		wait for period;
-		INSTRUCTION	    <= b"101011_00000_00011_00000_00000_101000"; -- SW r3, 40(r0)
-		wait for period;
-		INSTRUCTION	    <= b"100011_00000_01010_00000_00000_100000"; -- LW r10, 32(r0)		
-        wait for period;
-		INSTRUCTION	    <= b"100011_00000_01011_00000_00000_100100"; -- LW r11, 36(r0)	
-		wait for period;
-		INSTRUCTION	    <= b"100011_00000_01100_00000_00000_101000"; -- LW r12, 40(r0)
-		wait for period;
-		INSTRUCTION	    <= b"100000_00000_01010_00000_00000_100000"; -- LB r10, 32(r0)		
-        wait for period;
-		INSTRUCTION	    <= b"100000_00000_01011_00000_00000_100100"; -- LB r11, 36(r0)	
-		wait for period;
-		INSTRUCTION	    <= b"100100_00000_01100_00000_00000_100100"; -- LBU r12, 36(r0)
-		wait for period;
-		INSTRUCTION	    <= b"100100_00000_01010_00000_00000_101000"; -- LBU r10, 40(r0)		
-        wait for period;
-		INSTRUCTION	    <= b"100100_00000_01011_00000_00000_101001"; -- LBU r11, 41(r0)	
-		wait for period;
-		INSTRUCTION	    <= b"100100_00000_01100_00000_00000_101010"; -- LBU r12, 42(r0)
-		wait for period;
-		INSTRUCTION	    <= b"100100_00000_01100_00000_00000_101011"; -- LBU r12, 43(r0)
-		wait for period;
-		INSTRUCTION	    <= b"101000_00000_00100_00000_00000_101100"; -- SB r4, 44(r0)
-		wait for period;
-		INSTRUCTION	    <= b"101000_00000_00100_00000_00000_101101"; -- SB r4, 45(r0)
-		wait for period;
-		INSTRUCTION	    <= b"101000_00000_00100_00000_00000_101110"; -- SB r4, 46(r0)
-		wait for period;
-		INSTRUCTION	    <= b"101000_00000_00100_00000_00000_101111"; -- SB r4, 47(r0)
-		wait for period;
-		INSTRUCTION	    <= b"100011_00000_01100_00000_00000_101100"; -- LW r12, 44(r0)
-		wait for period;
-		-----THE FOLLOWING INSTRUCTIONS ARE AIMED AT TESTING BRANCHING------
-		INSTRUCTION	    <= b"000100_00001_00101_00000_00000_001010"; -- BEQ r1, r5, 10
-		wait for period;
-		INSTRUCTION	    <= b"000100_00001_00010_00000_00000_010100"; -- BEQ r1, r2, 20
-		wait for period;
-		INSTRUCTION	    <= b"000101_00001_00101_00000_00000_001010"; -- BNE r1, r5, 10
-		wait for period;
-		INSTRUCTION	    <= b"000101_00001_00010_00000_00000_010100"; -- BNE r1, r2, 20
+		SWITCHES <= (6|8 => '1',others => '0');
 		wait for 5*period;
-        reset <= '1';
+		SWITCHES(6) <= '0';           -- STOP RESETTING
         wait;
     end process;
 
