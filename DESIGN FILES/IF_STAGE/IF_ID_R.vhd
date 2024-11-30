@@ -18,6 +18,8 @@ begin
     process(CLK,RESET)
       begin
         if rising_edge(CLK) then
+            -- WHEN BRANCHING (PC_SEL = '1') WE NEED TO FLUSH THE IF_STAGE REGISTERS.
+            -- WHEN RESETTING, WE NEED TO FLUSH THE IF_STAGE REGISTERS.
             if RESET = '1' then          
                 PC_OUT <= (others => '0');
             else

@@ -20,7 +20,7 @@ architecture Behavioral of CLOCK_MANAGER is
 
     signal CLK_SLOW: STD_LOGIC:='0';
     signal CLK_SLOW_ENABLE: STD_LOGIC:='0';
-    signal COUNT: INTEGER:=0;
+    signal COUNT: unsigned(25 downto 0):= to_unsigned(0,26);
     
     signal CLK_SELECTED: STD_LOGIC;
 begin
@@ -31,11 +31,12 @@ begin
 Process(CLK_IN)
 begin
     if rising_edge(CLK_IN) then
-        if(COUNT = 50000000) then
-            COUNT <= 0;
-            CLK_SLOW_ENABLE <= not CLK_SLOW_ENABLE;
+        if(COUNT = 50000000 ) then
+            COUNT <= to_unsigned(0,26);
+            CLK_SLOW_ENABLE <= '1';
         else
             COUNT <= COUNT+1;
+            CLK_SLOW_ENABLE <= '0';
         end if;     
     end if;
 end process;

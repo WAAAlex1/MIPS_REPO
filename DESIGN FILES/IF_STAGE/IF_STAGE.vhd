@@ -25,11 +25,11 @@ architecture IF_ARCH of IF_STAGE is
     signal PC_INCd: STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);
 
 -- COMPONENT DECLARATIONS
-
 component INST_MEM is
    port(
        RESET     : in  std_logic;
        CLK       : in  std_logic;
+       PC_SEL    : in  STD_LOGIC;
        ADDR      : in  STD_LOGIC_VECTOR(5 DOWNTO 0);
        DATA_O    : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0)
        );
@@ -65,6 +65,7 @@ begin
         PORT MAP(
             RESET     => RESET,
             CLK       => CLK,
+            PC_SEL    => PC_SEL,
             ADDR      => PC_ADDR(5 DOWNTO 0),
             DATA_O    => MEM_DATA_O
         );
@@ -90,6 +91,7 @@ begin
            PC_OUT => PC_o
          );
               
+    
     -- PC REGISTER WITH LOGIC FOR SELECTING NEXT PC          
     process (CLK, RESET_PC, BRANCH_PC, PC_INCd, RESET)
     begin   
