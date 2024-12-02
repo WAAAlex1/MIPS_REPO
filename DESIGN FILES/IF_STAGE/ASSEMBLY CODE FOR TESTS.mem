@@ -1,0 +1,110 @@
+
+
+ARITHMETIC TEST:
+
+    ORI $t0 $zero 0x0002
+    ORI $t1 $zero 0x0005
+    SUB $t0 $t0 $t1
+    ADD $t2 $t0 $t1
+    ADDU $t3 $t0 $t1
+    SUB $t4 $t0 $t1
+    SUBU $t5 $t0 $t1
+    ADDI $t6 $t0 0x0004
+
+    IF TEST GOES WELL:
+        EXPECT:
+            t0 / R8 = 0xFFFF_FFFD
+            t1 / R9 = 0x0005
+            t2 / R10 = 0x0002
+            t3 / R11 = 0x0002
+            t4 / R12 = 0xFFFF_FFF8
+            t5 / R13 = 0xFFFF_FFF8
+            t6 / R14 = 0x0001
+
+BITWISE TEST:
+
+    ADDI $v0 $zero 0x00FF
+    SRL $v1 $v0 0x0001
+    SLL $a0 $v1 0x0010
+    SRL $a1 $a0 0x0011
+    
+    IF TEST GOES WELL:
+        EXPECT:
+            v0 / R2 = 0x00FF
+            v1 / R3 = 0x007F
+            a0 / R4 = 0x007F_0000
+            a1 / R5 = 0x003F
+    
+BRANCHING TEST:
+
+    ADDI $v0 $zero 0x0004   -- v0 should equal 4
+    ADDI $v1 $zero 0x0004   -- v1 should equal 4
+    BEQ  $v0 $v1   0x0002   -- skip next two lines if v0 = v1 (should be the case)
+    ADDI $a0 $zero 0x0004   -- a0 should be equal to 4
+    BEQ $zero $zero 0x0005  -- always skip the next five lines
+    ADDI $a0 $zero 0x0003   -- a0 should equal 3
+    BNE  $v1 $a0   0x0001   -- Skip the next line if v1 != a0 (should be the case)
+    BEQ  $zero $zero 0x0002 -- Always skip the next two lines
+    ADDI $a1 $zero 0x0001   -- Add a1 should equal 1
+    BEQ  $zero $zero 0x0001 -- Always skip the next line
+    ADDI $a1 $zero 0x000C   -- a1 should equal 12 
+    
+    IF TEST GOES SMOOTHLY: 
+        EXPECT: 
+            v0 / R2 = 4
+            v1 / R3 = 4
+            a0 / R4 = 3
+            a1 / R5 = 1
+
+
+FORWARDING TEST:
+
+    LUI $v0 0xFFFF
+    ORI $v0 $v0 0xFFFF  -- Using V0 immediately
+    ADD $v1 $zero $v0   
+    ADD $a0 $v1 $v0     -- using V1 immediately
+    SW $a0 0x0000 $zero -- Storing a0 immediately
+    LW $a1 0x0000 $zero -- Loading 0x0000 immediately
+    SW $a1 0x0004 $zero -- Storing a1 immediately
+    LW $a2 0x0004 $zero -- Loading 0x0004 immediately
+    ADDI $a3 $a2 0x0001  -- EXPECT TO FAIL (currently we do not have the proper hazard detection to handle this case)
+    
+    IF TEST GOES SMOOTHLY: 
+            v0 / R2 = 0xFFFF_FFFF
+            v1 / R3 = 0xFFFF_FFFF
+            a0 / R4 = 0xFFFF_FFFE
+            a1 / R5 = 0xFFFF_FFFE
+            a2 / R6 = 0xFFFF_FFFE
+            a3 / R7 = 0xFFFF_FFFF
+        EXPECT: 
+            v0 / R2 = 0xFFFF_FFFF
+            v1 / R3 = 0xFFFF_FFFF
+            a0 / R4 = 0xFFFF_FFFE
+            a1 / R5 = 0xFFFF_FFFE
+            a2 / R6 = 0xFFFF_FFFE
+            a3 / R7 = 0x0001        -- Wont have time to load the word before it is used
+    
+
+MEMORY TEST: (COMPLETE)
+
+    SW r1, 32(r0)
+    SW r2, 36(r0)
+    SW r3, 40(r0)    
+    LW r10, 32(r0)
+    LW r11, 36(r0)
+    LW r12, 40(r0)
+    LB r10, 32(r0)
+    LB r11, 36(r0)
+    LBU r12, 36(r0)
+    LBU r10, 40(r0)
+    LBU r11, 41(r0)
+    LBU r12, 42(r0)
+    LBU r12, 43(r0)
+    SB r4, 44(r0)
+    SB r4, 45(r0)
+    SB r4, 46(r0)
+    SB r4, 47(r0)
+    LW r12, 44(r0)
+    
+    IF TEST GOES SMOOTHLY:
+        (see waveform)
