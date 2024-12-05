@@ -156,10 +156,19 @@ signal RT_DATA_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal OFFSET_SIGN_EXTENDED: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal BRANCH_INTERNAL: STD_LOGIC_VECTOR(1 DOWNTO 0);
 
+signal imm_extend:  STD_LOGIC;
+signal sign_extend:   STD_LOGIC;
 begin
 
 -- SIGN EXTENDING THE OFFSET (immediate value)
-with INSTRUCTION(15) select OFFSET_SIGN_EXTENDED <=
+with EX_CTRL_INT.ALUOpSelect select imm_extend <=
+                    '0' when ADDU,
+                    '0' when SUBU,
+                    '1' when others;             
+
+sign_extend <= imm_extend and INSTRUCTION(15);
+
+with sign_extend select OFFSET_SIGN_EXTENDED <=
                     H16b&Instruction(15 downto 0) when '1',
                     L16b&Instruction(15 downto 0) when others;
 

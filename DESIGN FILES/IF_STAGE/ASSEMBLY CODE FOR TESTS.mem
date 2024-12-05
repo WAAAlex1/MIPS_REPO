@@ -83,7 +83,7 @@ FORWARDING TEST:
             a1 / R5 = 0xFFFF_FFFE
             a2 / R6 = 0xFFFF_FFFE
             a3 / R7 = 0x0001        -- Wont have time to load the word before it is used
-    
+                                    -- SHOULD STALL ONE STAGE, BUT NOT IMPLEMENTED
 
 MEMORY TEST: (COMPLETE)
 
@@ -108,3 +108,54 @@ MEMORY TEST: (COMPLETE)
     
     IF TEST GOES SMOOTHLY:
         (see waveform)
+        
+        
+ 
+ASSEMBLY + MACHINE CODE FOR ACTUAL DEMO PROGRAMS
+
+    PROGRAM 1: SUM OF NUMBERS FROM 0 TO 0x100
+    EXPECTED OUTPUT: R3 = 0x70807800
+    
+    0	addiu   r1 r0 0xF000
+    1	add     r2 r0 r0
+    2	add     r3 r0 r0
+        
+    3	add     r0 r0 r0
+    4	add     r0 r0 r0
+    5	add     r0 r0 r0
+    
+        # Main loop body
+    6	addi	r2 r2 0x1	# i = i + 1
+    7	add     r0 r0 r0
+    8	add     r0 r0 r0
+    9	add     r0 r0 r0
+    10	add     r0 r0 r0
+    11	add	    r3 r3 r2	 # sum = sum + i
+    12	bne	    r1 r2 0xFFF9 # if i != N, go back to #6 subtract 7 from new pc
+    13	beq     r0 r0 0xFFFF # stay here, subtract 1 from new pc
+    
+    0	2401F000
+    1	00001020	
+    2	00001820
+    3	00000020
+    4	00000020
+    5	00000020
+    6	20420001
+    7	00000020
+    8	00000020
+    9	00000020
+    10	00000020
+    11	00621820
+    12	1422FFF9
+    13	1000FFFF
+    
+    PROGRAM 2: COUNT THE NUMBER OF 1 bits in memory from MEM LOCATION 0x0001 TO 0x010
+    
+    0	addi r1 r0 0x100
+    1	add r2 r0 r0
+    2	add r3 r0 r0
+    
+    
+    
+        
+        

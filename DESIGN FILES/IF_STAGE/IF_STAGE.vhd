@@ -15,7 +15,7 @@ entity IF_STAGE is
             PC_SEL       : in STD_LOGIC;                                                    
             --OUTPUTS        (REGISTERED)                 
             MEM_DATA_O   : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);
-            PC_o         : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+            PC_o         : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0):=(0 => '1', others => '0')
             );
 end IF_STAGE;
 
@@ -30,7 +30,7 @@ component INST_MEM is
        RESET     : in  std_logic;
        CLK       : in  std_logic;
        PC_SEL    : in  STD_LOGIC;
-       ADDR      : in  STD_LOGIC_VECTOR(5 DOWNTO 0);
+       ADDR      : in  STD_LOGIC_VECTOR(8 DOWNTO 0);
        DATA_O    : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0)
        );
 end component INST_MEM;
@@ -43,14 +43,15 @@ end component INST_MEM;
 --           );
 --    end component INCREMENTER;
 
-    component IF_ID_R is
-        port(
-           CLK            : in STD_LOGIC;
-           RESET          : in STD_LOGIC;
-           PC_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-           PC_OUT         : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
-           );
-    end component IF_ID_R; 
+component IF_ID_R is
+    port(
+       CLK            : in STD_LOGIC;
+       RESET          : in STD_LOGIC;
+       RESET_PC       : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+       PC_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+       PC_OUT         : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+       );
+end component IF_ID_R; 
 
 -- SIGNAL DECLARATIONS
 --...
@@ -66,18 +67,9 @@ begin
             RESET     => RESET,
             CLK       => CLK,
             PC_SEL    => PC_SEL,
-            ADDR      => PC_ADDR(5 DOWNTO 0),
+            ADDR      => PC_ADDR(8 DOWNTO 0),
             DATA_O    => MEM_DATA_O
         );
- 
- --  SIMPLE HALF ADDER FOR INCREMENTING THE PC BY 1.
- --  PC INCREMENTED BY 1 AS THE INSTRUCTION MEMORY IS WORD-ADDRESSABLE. 
- --   INCREMETER: INCREMENTER
- --       GENERIC MAP( DEPTH => 6 )
- --       PORT MAP(
- --           ADDR => PC_ADDR,
- --           SUM => PC_INCd
- --       );
  
     PC_INCd <= std_logic_vector(unsigned(PC_ADDR) + 1);
 
@@ -87,6 +79,7 @@ begin
         PORT MAP(
            CLK => CLK,
            RESET => RESET,
+           RESET_PC => RESET_PC,
            PC_IN => PC_ADDR, -- COMPUTED ADDDRESS
            PC_OUT => PC_o
          );
