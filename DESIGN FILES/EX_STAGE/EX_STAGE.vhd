@@ -14,7 +14,8 @@ entity EX_STAGE is
      					     	
 		RS_DATA	        : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 	    RT_DATA 		: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
-		OFFSET			: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
+		OFFSET_S	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
+		OFFSET_U	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);		
 		RT_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
 		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);			 				
 		
@@ -89,8 +90,11 @@ end component EX_MEM_REGISTERS;
 
     --SIGNALS FOR ALU
 	signal ALU_RES_INTERNAL	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
+	signal OFFSET              : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 
 begin
+
+
 
 -- MUXES    -------------------------------------------------------
     -- RT_RD_IDX MUX
@@ -108,7 +112,12 @@ begin
     --ALU INPUT MUX ON RS
     with EX_CTRL.ALULS select ALU_REG_INTERNAL1 <=
            RS_DATA when '0',
-           OFFSET  when others;       
+           OFFSET  when others;      
+           
+    with EX_CTRL.ALUOpSelect select OFFSET <=
+                    OFFSET_U when ADDU,
+                    OFFSET_U when SUBU,
+                    OFFSET_S when others;            
 
 -- INSTANTIATE COMPONENTS -----------------------------------------
 

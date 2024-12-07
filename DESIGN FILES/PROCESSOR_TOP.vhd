@@ -57,7 +57,8 @@ component ID_STAGE is
 		REG_ADDR        : in STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0);
 		
 		--OUTPUTS			
-		OFFSET_O        : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] SIGN EXTENDED TO 32BIT
+		OFFSET_O_S      : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] SIGN EXTENDED TO 32BIT
+		OFFSET_O_U      : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] EXTENDED TO 32BIT (UNSIGNED)
 		RS_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RD REG (32 BIT)
 		RT_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RT REG (32 BIT)		
 		RD_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[15-11] IDX OF RD 	
@@ -85,7 +86,8 @@ component EX_STAGE is
      					     	
 		RS_DATA	        : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 	    RT_DATA 		: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
-		OFFSET			: in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
+		OFFSET_S	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
+		OFFSET_U	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
 		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);			 				
 		
@@ -155,7 +157,8 @@ signal INSTRUCTION_IF_ID:	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0
 signal PC_ADDR_IF_ID    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');	
 
 -- SIGNALS FROM ID
-signal OFFSET_ID_EX     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');		
+signal OFFSET_ID_EX_S     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');
+signal OFFSET_ID_EX_U     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');			
 signal RS_DATA_ID_EX    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');		
 signal RT_DATA_ID_EX    :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');					
 signal RD_IDX_ID_EX     :	STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0):=(others => '0');			
@@ -224,7 +227,8 @@ MIPS_ID: ID_STAGE port map(
 		REG_ADDR        => REG_IDX_WB_ID,		
 		
 		--OUTPUTS			
-		OFFSET_O        => OFFSET_ID_EX,		
+		OFFSET_O_S      => OFFSET_ID_EX_S,
+		OFFSET_O_U      => OFFSET_ID_EX_U,	
 		RS_DATA_O       => RS_DATA_ID_EX,		
 		RT_DATA_O       => RT_DATA_ID_EX,				
 		RD_IDX_O        => RD_IDX_ID_EX,		
@@ -250,7 +254,8 @@ MIPS_EX: EX_STAGE port map(
    
    		RS_DATA	        => RS_DATA_ID_EX,		
 	    RT_DATA 		=> RT_DATA_ID_EX,		
-		OFFSET			=> OFFSET_ID_EX,		
+		OFFSET_S		=> OFFSET_ID_EX_S,
+		OFFSET_U		=> OFFSET_ID_EX_U,		
 		RT_IDX			=> RT_IDX_ID_EX, 			
 		RD_IDX			=> RD_IDX_ID_EX,				 				
 		

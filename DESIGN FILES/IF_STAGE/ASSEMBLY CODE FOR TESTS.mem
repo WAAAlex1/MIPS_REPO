@@ -130,7 +130,7 @@ ASSEMBLY + MACHINE CODE FOR ACTUAL DEMO PROGRAMS
     8	add     r0 r0 r0
     9	add     r0 r0 r0
     10	add     r0 r0 r0
-    11	add	    r3 r3 r2	 # sum = sum + i
+    11	addu	r3 r3 r2	 # sum = sum + i
     12	bne	    r1 r2 0xFFF9 # if i != N, go back to #6 subtract 7 from new pc
     13	beq     r0 r0 0xFFFF # stay here, subtract 1 from new pc
     
@@ -145,7 +145,7 @@ ASSEMBLY + MACHINE CODE FOR ACTUAL DEMO PROGRAMS
     8	00000020
     9	00000020
     10	00000020
-    11	00621820
+    11	00621821
     12	1422FFF9
     13	1000FFFF
     

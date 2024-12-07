@@ -15,8 +15,10 @@ architecture arch of SEVEN_SEG_DRIVER is
 	
 	signal cnt: unsigned(18 downto 0) := to_unsigned(0,19); --Need 19 bits to count to 300.000 (3ms uptime for each anode)
 	signal ano_1: std_logic_vector(ano'high downto ano'low):=b"1000";
-	constant cnt_target: natural:=300000;
 	constant num_bits: natural:=19;
+	constant count_target: natural:=300000;
+	
+	signal index: unsigned(1 downto 0):=b"00";
 	
 	type DATA_T is ARRAY(3 downto 0) of STD_LOGIC_VECTOR(3 DOWNTO 0);
 	signal DATA_IN: DATA_T;
@@ -31,8 +33,6 @@ begin
         DATA_IN(i) <= data(((i+1)*4)-1 DOWNTO i*4);
 	end generate; 
 	
-	ano <= ano_1;
-
 	-- PROCESS 1 -> TRANSLATE DATA INTO PATTERN
 	GENERATE_PATTERNS: 
 	for i in 0 to 3 generate
@@ -54,25 +54,26 @@ begin
            b"1001_111" when 14, --E
            b"1000_111" when 15, --F
            b"1111_110" when others;
-	end generate;              
+	end generate;                  
+	
+	ano <= ano_1;
 	
 	-- PROCESS 2 -> DRIVE DATA ONTO 7-SEG
 	-- 2 segment approach. 
 	-- use simple counter. When count reached circular shift anode right once. 
-	-- Count reached when count = 36000. Count needed to get 12ms refresh speed 
 	-- as each digit should then be turned on for 3ms -> 3/1000hZ -> needs 300.000 cycles from 100MHz clock. 
-	process(clk) 
-	   variable i: integer:=0;
+	
+	process(clk, cnt, index, ano_1) 
 	begin
 	if rising_edge(clk) then
-	   if cnt = cnt_target then
+	   if cnt = to_unsigned(count_target,num_bits) then
            ano_1 <= ano_1(ano_1'low)&ano_1(ano_1'high downto ano_1'low+1); -- Right circular shifting
            cnt <= to_unsigned(0,num_bits);
-           seg_out <= not pattern(i);
-           if i = 3 then
-              i := 0;
+           seg_out <= not pattern(to_integer(index));
+           if index = 3 then
+              index <= to_unsigned(0,2);
            else
-              i := i+1;
+              index <= index+1;
            end if;      
        else
            cnt <= cnt+1;

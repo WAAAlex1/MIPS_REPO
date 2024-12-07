@@ -23,7 +23,8 @@ entity ID_STAGE is
 		REG_ADDR        : in STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0);
 		
 		--OUTPUTS			
-		OFFSET_O        : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] SIGN EXTENDED TO 32BIT
+		OFFSET_O_S      : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] SIGN EXTENDED TO 32BIT
+		OFFSET_O_U      : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- INST[15-0] extended to 32BIT  (unsigned)
 		RS_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RD REG (32 BIT)
 		RT_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RT REG (32 BIT)		
 		RD_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[15-11] IDX OF RD 	
@@ -75,7 +76,8 @@ component ID_EX_REGISTERS is
         RESET               : in STD_LOGIC;
         
         -- SIGNALS CREATED IN ID STAGE
-        OFFSET_IN           : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET_IN_S         : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET_IN_U         : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         RT_IDX_IN           : in STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RD_IDX_IN           : in STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RS_DATA_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
@@ -86,7 +88,8 @@ component ID_EX_REGISTERS is
         EX_CTRL_IN          : in EX_CTRL_REG;
               
         --OUTPUTS
-        OFFSET_O            : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET_O_S          : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET_O_U          : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         RT_IDX_O            : out STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RD_IDX_O            : out STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RT_DATA_O           : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);--data is 32bit
@@ -154,23 +157,17 @@ signal RS_DATA_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal RT_DATA_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 
 signal OFFSET_SIGN_EXTENDED: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+signal OFFSET_UNSIGNED: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal BRANCH_INTERNAL: STD_LOGIC_VECTOR(1 DOWNTO 0);
 
-signal imm_extend:  STD_LOGIC;
-signal sign_extend:   STD_LOGIC;
 begin
 
--- SIGN EXTENDING THE OFFSET (immediate value)
-with EX_CTRL_INT.ALUOpSelect select imm_extend <=
-                    '0' when ADDU,
-                    '0' when SUBU,
-                    '1' when others;             
-
-sign_extend <= imm_extend and INSTRUCTION(15);
-
-with sign_extend select OFFSET_SIGN_EXTENDED <=
+with INSTRUCTION(15) select OFFSET_SIGN_EXTENDED <=
                     H16b&Instruction(15 downto 0) when '1',
                     L16b&Instruction(15 downto 0) when others;
+
+OFFSET_UNSIGNED <= L16b&Instruction(15 downto 0);
+
 
 --INSTANTIATION OF COMPONENTS
 REGFILE: REGISTER_FILE PORT MAP(
@@ -238,7 +235,8 @@ ID_EX_REGS: ID_EX_REGISTERS PORT MAP(
         RESET        => RESET,
         
         -- SIGNALS CREATED IN ID STAGE
-        OFFSET_IN    => OFFSET_SIGN_EXTENDED,
+        OFFSET_IN_S  => OFFSET_SIGN_EXTENDED,
+        OFFSET_IN_U  => OFFSET_UNSIGNED,
         RT_IDX_IN    => INSTRUCTION(20 DOWNTO 16),
         RD_IDX_IN    => INSTRUCTION(15 DOWNTO 11),
         RS_DATA_IN   => RS_DATA_INTERNAL,
@@ -250,7 +248,8 @@ ID_EX_REGS: ID_EX_REGISTERS PORT MAP(
         EX_CTRL_IN   => EX_CTRL_INT,
               
         --OUTPUTS
-        OFFSET_O     => OFFSET_O,
+        OFFSET_O_S     => OFFSET_O_S,
+        OFFSET_O_U     => OFFSET_O_U,
         RT_IDX_O     => RT_IDX_O,
         RD_IDX_O     => RD_IDX_O,
         RT_DATA_O    => RT_DATA_O,

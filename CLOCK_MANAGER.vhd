@@ -27,11 +27,11 @@ begin
 
 ---------------- CLOCK DIVIDER ---------------------------------
 -- INPUT: 100MHZ CLOCK
--- OUTPUT: 1Hz CLOCK
+-- OUTPUT: 2Hz CLOCK
 Process(CLK_IN)
 begin
     if rising_edge(CLK_IN) then
-        if(COUNT = 50000000 ) then
+        if(COUNT = 10000000 ) then --SET TO 50000000 FOR 1 HZ
             COUNT <= to_unsigned(0,26);
             CLK_SLOW_ENABLE <= '1';
         else
