@@ -88,39 +88,49 @@ process(ALU_OPSEL, SOURCE1, SOURCE1_SIGNED, SOURCE1_UNSIGNED,
     variable SOURCE1_AS_INT: INTEGER;
 begin
     case ALU_OPSEL is
-        when ADDS =>    -- ADD (SIGNED)
+        when ADDS | SUBS | ADDU | SUBU =>     -- ADDITION / SUBTRACTION
             RESULT <= RESULT_ADDSUB;
-        when SUBS =>    -- SUB (SIGNED)
-            RESULT <= RESULT_ADDSUB;
-        when ADDU =>    -- ADD (UNSIGNED)
-            RESULT <= RESULT_ADDSUB;
-        when SUBU =>    -- SUB (UNSIGNED)
-            RESULT <= RESULT_ADDSUB;
-        when OR0 =>     -- LOGICAL OR
+        when OR0   =>                         -- BITWISE OR
             RESULT <= SOURCE1 OR SOURCE2;
-        when AND0 =>    -- LOGICAL AND
+        when AND0  =>                         -- BITWISE AND
             RESULT <= SOURCE1 AND SOURCE2;
-        when SLTS =>    -- SIGNED COMPARISON (SLT)
+        when XOR0   =>                        -- BITWISE XOR
+            RESULT <= SOURCE1 XOR SOURCE2;
+        when NOR0  =>                         -- BITWISE NOR
+            RESULT <= SOURCE1 NOR SOURCE2;    
+        when SLT0  =>                         -- SIGNED COMPARISON 
             if(SOURCE1_SIGNED < SOURCE2_SIGNED) then
                RESULT <= (Result'low => '1', others => '0');
             else
                RESULT <= (others => '0');  
             end if;
-        when SLTU =>    -- UNSIGNED COMPARISON (SLT)
+        when SLTU  =>                         -- UNSIGNED COMPARISON 
             if(SOURCE1_UNSIGNED < SOURCE2_UNSIGNED) then
                RESULT <= (Result'low => '1', others => '0');
             else
                RESULT <= (others => '0');  
             end if;    
-        when SLL0 =>    --LEFT LOGICAL SHIFTING
+        when SLL0 =>                          --LEFT LOGICAL SHIFTING
             SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED(10 DOWNTO 6)); -- ACCESS SHAMT FIELD
-            RESULT <= STD_LOGIC_VECTOR(shift_left(SOURCE2_UNSIGNED,SOURCE1_AS_INT)); 
-        when SRL0 =>    --RIGHT LOGICAL SHIFTING
+            RESULT <= STD_LOGIC_VECTOR(shift_left(SOURCE2_UNSIGNED,SOURCE1_AS_INT));
+        when SLLV =>                          --LEFT LOGICAL VARIABLE SHIFTING
+            SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED); 
+            RESULT <= STD_LOGIC_VECTOR(shift_left(SOURCE2_UNSIGNED,SOURCE1_AS_INT));      
+        when SRL0 =>                          --RIGHT LOGICAL SHIFTING
             SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED(10 DOWNTO 6)); -- ACCESS SHAMT FIELD
-            RESULT <= STD_LOGIC_VECTOR(shift_right(SOURCE2_UNSIGNED,SOURCE1_AS_INT)); 
-        when SL16 =>    --SHIFT LEFT LOGICAL 16 BIT (SOURCE2). 
+            RESULT <= STD_LOGIC_VECTOR(shift_right(SOURCE2_UNSIGNED,SOURCE1_AS_INT));
+        when SRLV =>                          --RIGHT LOGICAL VARIABLE SHIFTING
+            SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED); 
+            RESULT <= STD_LOGIC_VECTOR(shift_right(SOURCE2_UNSIGNED,SOURCE1_AS_INT));    
+        when SRA0 =>                          --RIGHT ARITHMETIC SHIFTING
+            SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED(10 DOWNTO 6)); -- ACCESS SHAMT FIELD
+            RESULT <= STD_LOGIC_VECTOR(shift_right(SOURCE2_SIGNED,SOURCE1_AS_INT));
+        when SRAV =>                          --RIGHT ARITHMETIC SHIFTING
+            SOURCE1_AS_INT := TO_INTEGER(SOURCE1_UNSIGNED); 
+            RESULT <= STD_LOGIC_VECTOR(shift_right(SOURCE2_SIGNED,SOURCE1_AS_INT));              
+        when SL16 =>                          --SHIFT LEFT LOGICAL 16 BIT (SOURCE2). 
             RESULT <= STD_LOGIC_VECTOR(shift_left(SOURCE2_UNSIGNED,16));                    
-        when others =>  --BASE CASE: ASSIGN THE UNSIGNED RESULT.
+        when others =>                        --BASE CASE: ASSIGN THE UNSIGNED RESULT.
            RESULT <= RESULT_ADDSUB;
     end case;        
 end process;

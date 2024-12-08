@@ -10,7 +10,7 @@ entity ALU_CONTROL is
 			-- INPUTS				
 			FUNCT		:	in STD_LOGIC_VECTOR(5 DOWNTO 0);	
 			OPCODE      :   IN STD_LOGIC_VECTOR(5 DOWNTO 0);
-			ALU_TYPE	:	in STD_LOGIC;	
+			ALU_TYPE	:	in STD_LOGIC_VECTOR(1 DOWNTO 0);	
 			-- OUTPUTS	
 		    ALU_OPSEL   :	out ALU_OPSELECT	
 	);
@@ -22,53 +22,72 @@ begin
 	process(OPCODE,FUNCT,ALU_TYPE)
 	begin
 	   case ALU_TYPE is
-	       when '1' => --DEALING WITH R TYPE INSTRUCTION
+	       when "01" => --DEALING WITH R TYPE INSTRUCTION
 	           case FUNCT is
-	               when "1-0000" => -- ADD INSTR
+	               when "100000" => -- ADD INSTR
 	                   ALU_OPSEL <= ADDS;
-	               when "1-0001" => -- ADDU INSTR
+	               when "100001" => -- ADDU INSTR
 	                   ALU_OPSEL <= ADDU;    
-	               when "1-0010" => -- SUB INSTR
+	               when "100010" => -- SUB INSTR
 	                   ALU_OPSEL <= SUBS;
-	               when "1-0011" => -- SUBU INSTR
+	               when "100011" => -- SUBU INSTR
 	                   ALU_OPSEL <= SUBU;
-	               when "1-0101" => -- OR INSTR
+	               when "100101" => -- OR INSTR
 	                   ALU_OPSEL <= OR0;
-	               when "1-0100" => -- AND INSTR
+	               when "100100" => -- AND INSTR
 	                   ALU_OPSEL <= AND0;
-	               when "1-1010" => -- SLT INSTR
-	                   ALU_OPSEL <= SLTS;
-	               when "1-1011" => -- SLTU INSTR
+	               when "101010" => -- SLT INSTR
+	                   ALU_OPSEL <= SLT0;
+	               when "101011" => -- SLTU INSTR
 	                   ALU_OPSEL <= SLTU;
-	               when "0-0000" => -- SLL INSTR
+	               when "000000" => -- SLL INSTR
 	                   ALU_OPSEL <= SLL0;
-	               when "0-0010" => -- SRL INSTR
+	               when "000100" => -- SLLV INSTR
+	                   ALU_OPSEL <= SLLV;    
+	               when "000010" =>  -- SRL INSTR
 	                   ALU_OPSEL <= SRL0;
+	               when "000110" =>  -- SRLV INSTR
+	                   ALU_OPSEL <= SRLV;    
+                   when "000011" => -- SRA INSTR
+	                   ALU_OPSEL <= SRA0;
+	               when "000111" => -- SRAV INSTR
+	                   ALU_OPSEL <= SRAV;       
+	               when "100110" => -- XOR INSTR
+	                   ALU_OPSEL <= XOR0;
+	               when "100111" => -- NOR INSTR
+	                   ALU_OPSEL <= NOR0;       
 	               when others =>   -- BASE CASE: ADD SIGNED
 	                   ALU_OPSEL <= ADDS;    
 	           end case;    
-	       when '0' => --DEALING WITH I TYPE INSTRUCTION
+	       when "00" => --DEALING WITH I TYPE INSTRUCTION
 	           case OPCODE is
-	               --  ADDI INSTR  SB INSTR   SW INSTR   LB INSTR   LW INSTR
-	               when "0-1000" | "1-1000" | "1-1011" | "1-0000" | "1-0011" => 
+	               --  ADDI INSTR 
+	               when "001000" => 
 	                   ALU_OPSEL <= ADDS;
-	               -- ADDIU INSTR LBU INSTR
-	               when "0-1001" | "1-0100" => 
+	               -- ADDIU INSTR
+	               when "001001" => 
 	                   ALU_OPSEL <= ADDU;    
 	               --   BEQ INSTR  BNE INSTR
-	               when "0-0100" | "0-0101" => 
+	               when "000100" | "000101" => 
 	                   ALU_OPSEL <= SUBS;         -- COULD BE CHANGED
-	               when "0-1101" => -- ORI INSTR
+	               when "001101" => -- ORI INSTR
 	                   ALU_OPSEL <= OR0;
-	               when "0-1100" => -- ANDI INSTR
+	               when "001100" => -- ANDI INSTR
 	                   ALU_OPSEL <= AND0;
-	               when "0-1111" => -- LUI INSTR
-	                   ALU_OPSEL <= SL16;    
+	               when "001111" => -- LUI INSTR
+	                   ALU_OPSEL <= SL16;
+	               when "001110" => -- XORI INSTR
+	                   ALU_OPSEL <= XOR0;
+	               when "001010" => -- SLTI INSTR
+	                   ALU_OPSEL <= SLT0;
+	               when "001011" => -- SLTIU INSTR
+	                   ALU_OPSEL <= SLTU;                 
 	               when others =>   -- BASE CASE: ADD SIGNED
 	                   ALU_OPSEL <= ADDS;    
 	           end case;
 	       when others =>
-	           null;
+	           -- WHEN JUMPING WE DONT NEED THE ALU, JUST EXECUTE ADDS
+	           ALU_OPSEL <= ADDS;
 	   end case;         
 	
 	end process;

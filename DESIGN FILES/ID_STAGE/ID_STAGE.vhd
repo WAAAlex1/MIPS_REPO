@@ -29,10 +29,10 @@ entity ID_STAGE is
 		RT_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RT REG (32 BIT)		
 		RD_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[15-11] IDX OF RD 	
 		RT_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[20-16] IDX OF RT
+        PC_ADDR_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0); -- PC_ADDR (FOR J-INSTUCTIONS)
 		
 		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG;				              -- CONTROL FOR WB STAGE
-		MEM_CTRL_O		: out MEM_CTRL_REG;                           -- CONTROL FOR MEM STAGE
+		MEM_WB_CTRL_O   : out MEM_WB_CTRL_REG;                         -- CONTROL FOR MEM/WB STAGE
 		EX_CTRL_o       : out EX_CTRL_REG;	
 		
 		-- OUTPUTS TO IF STAGE
@@ -82,9 +82,9 @@ component ID_EX_REGISTERS is
         RD_IDX_IN           : in STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RS_DATA_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         RT_DATA_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        PC_ADDR_IN          : in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         -- CONTROL SIGNALS CREATED IN ID STAGE
-        WB_CTRL_IN          : in WB_CTRL_REG;
-        MEM_CTRL_IN         : in MEM_CTRL_REG;
+        MEM_WB_CTRL_IN      : in MEM_WB_CTRL_REG;
         EX_CTRL_IN          : in EX_CTRL_REG;
               
         --OUTPUTS
@@ -94,8 +94,8 @@ component ID_EX_REGISTERS is
         RD_IDX_O            : out STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);--idx is 5 bit
         RT_DATA_O           : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);--data is 32bit
         RS_DATA_O           : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);--data is 32bit
-        WB_CTRL_O           : out WB_CTRL_REG;
-        MEM_CTRL_O          : out MEM_CTRL_REG;
+        PC_ADDR_O           : out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        MEM_WB_CTRL_O       : out MEM_WB_CTRL_REG;
         EX_CTRL_O           : out EX_CTRL_REG
     );
 end component ID_EX_REGISTERS; 
@@ -103,22 +103,18 @@ end component ID_EX_REGISTERS;
 component CONTROL_UNIT is
     port(
     --Inputs
-    OPCODE  :   in STD_LOGIC_VECTOR(5 downto 0);
-    FUNCT   :   in STD_LOGIC_VECTOR(5 downto 0);
+    INSTRUCTION: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
     --Outputs
     
     --CONTROL SIGNALS FOR EX STAGE
-    ALUTYPE :   out STD_LOGIC;
+    ALUTYPE :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
     ALUSRC  :   out STD_LOGIC;
     ALULS   :   out STD_LOGIC;
     
-    --CONTROL SIGNALS FOR MEM STAGE
-    W_R_CTRL:   out STD_LOGIC_VECTOR(1 DOWNTO 0);
-    BRANCH  :   out STD_LOGIC_VECTOR(1 DOWNTO 0);
-
-    --CONTROL SIGNALS FOR WB STAGE
-    RegWrite:   out STD_LOGIC;
-    MemToReg:   out STD_LOGIC_VECTOR(1 DOWNTO 0)
+    --CONTROL SIGNALS FOR MEM/WB STAGE
+    W_R_CTRL:   out STD_LOGIC_VECTOR(3 DOWNTO 0);
+    BRANCH  :   out STD_LOGIC_VECTOR(3 DOWNTO 0);
+    RegWrite:   out STD_LOGIC
     );
 end component CONTROL_UNIT;
 
@@ -126,8 +122,8 @@ component ALU_CONTROL is
 	port(
         -- INPUTS				
         FUNCT		:	in STD_LOGIC_VECTOR(5 DOWNTO 0);	
-        OPCODE      :   IN STD_LOGIC_VECTOR(5 DOWNTO 0);
-        ALU_TYPE	:	in STD_LOGIC;	
+        OPCODE      :   in STD_LOGIC_VECTOR(5 DOWNTO 0);
+        ALU_TYPE	:	in STD_LOGIC_VECTOR(1 DOWNTO 0);	
         -- OUTPUTS	
         ALU_OPSEL   :	out ALU_OPSELECT	
 	);
@@ -136,21 +132,21 @@ end component ALU_CONTROL;
 component BRANCH_CONTROL is
     port(
         -- INPUTS
-        PC_ADDR: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-        OFFSET:  in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-        RS_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-        RT_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-        BRANCH_CTRL: in STD_LOGIC_VECTOR(1 DOWNTO 0);
+        PC_ADDR:     in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        OFFSET:      in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        INSTR_INDEX: in STD_LOGIC_VECTOR(25 DOWNTO 0);
+        RS_DATA:     in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        RT_DATA:     in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        BRANCH_CTRL: in STD_LOGIC_VECTOR(3 DOWNTO 0);
         
         -- OUTPUTS
-        PC_SEL: out STD_LOGIC;
-        PC_ADDR_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+        PC_SEL:      out STD_LOGIC;
+        PC_ADDR_O:   out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
     );
 end component BRANCH_CONTROL;
 
 -- DECLARATION OF SIGNALS
-signal WB_CTRL_INT		: WB_CTRL_REG;
-signal MEM_CTRL_INT		: MEM_CTRL_REG;
+signal MEM_WB_CTRL_INT  : MEM_WB_CTRL_REG;
 signal EX_CTRL_INT		: EX_CTRL_REG;
 
 signal RS_DATA_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
@@ -158,7 +154,9 @@ signal RT_DATA_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 
 signal OFFSET_SIGN_EXTENDED: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 signal OFFSET_UNSIGNED: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-signal BRANCH_INTERNAL: STD_LOGIC_VECTOR(1 DOWNTO 0);
+signal BRANCH_INTERNAL: STD_LOGIC_VECTOR(3 DOWNTO 0);
+
+signal PC_ADDR_INTERNAL: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 
 begin
 
@@ -189,23 +187,22 @@ REGFILE: REGISTER_FILE PORT MAP(
 );
 
 CU: CONTROL_UNIT PORT MAP(
-    --Inputs
-    OPCODE  => INSTRUCTION(31 DOWNTO 26),
-    FUNCT   => INSTRUCTION(5 DOWNTO 0),
-    --Outputs
-    
+    --INPUTS
+    INSTRUCTION  => INSTRUCTION,
+   
+    --OUTPUTS
     --CONTROL SIGNALS FOR EX STAGE
     ALUTYPE => EX_CTRL_INT.ALUTYPE,
     ALUSRC  => EX_CTRL_INT.ALUSRC,
     ALULS   => EX_CTRL_INT.ALULS,
     
     --CONTROL SIGNALS FOR MEM STAGE
-    W_R_CTRL => MEM_CTRL_INT.W_R_CTRL,
-    Branch   => BRANCH_INTERNAL,
+    W_R_CTRL => MEM_WB_CTRL_INT.W_R_CTRL,
+    RegWrite => MEM_WB_CTRL_INT.RegWrite,
+    
+    -- CONTROL SIGNALS FOR IF STAGE
+    Branch   => BRANCH_INTERNAL
 
-    --CONTROL SIGNALS FOR WB STAGE
-    RegWrite => WB_CTRL_INT.RegWrite,
-    MemToReg => WB_CTRL_INT.MemToReg
 );
 
 ALU_CTRL: ALU_CONTROL port map(
@@ -220,14 +217,16 @@ BRA_CTRL: BRANCH_CONTROL port map(
         -- INPUTS
         PC_ADDR => PC_ADDR,
         OFFSET => OFFSET_SIGN_EXTENDED,
+        INSTR_INDEX => INSTRUCTION(25 DOWNTO 0),
         RS_DATA => RS_DATA_INTERNAL,
         RT_DATA => RT_DATA_INTERNAL,
         BRANCH_CTRL => BRANCH_INTERNAL,
         
         -- OUTPUTS
         PC_SEL => PC_SEL_ID_IF,
-        PC_ADDR_O => PC_ADDR_ID_IF
+        PC_ADDR_O => PC_ADDR_INTERNAL
 );
+PC_ADDR_ID_IF <= PC_ADDR_INTERNAL;
 
 ID_EX_REGS: ID_EX_REGISTERS PORT MAP(
         -- INPUTS
@@ -241,21 +240,21 @@ ID_EX_REGS: ID_EX_REGISTERS PORT MAP(
         RD_IDX_IN    => INSTRUCTION(15 DOWNTO 11),
         RS_DATA_IN   => RS_DATA_INTERNAL,
         RT_DATA_IN   => RT_DATA_INTERNAL,
+        PC_ADDR_IN   => PC_ADDR_INTERNAL,
         
         -- CONTROL SIGNALS CREATED IN ID STAGE
-        WB_CTRL_IN   => WB_CTRL_INT,
-        MEM_CTRL_IN  => MEM_CTRL_INT,
+        MEM_WB_CTRL_IN  => MEM_WB_CTRL_INT,
         EX_CTRL_IN   => EX_CTRL_INT,
               
         --OUTPUTS
-        OFFSET_O_S     => OFFSET_O_S,
-        OFFSET_O_U     => OFFSET_O_U,
+        OFFSET_O_S   => OFFSET_O_S,
+        OFFSET_O_U   => OFFSET_O_U,
         RT_IDX_O     => RT_IDX_O,
         RD_IDX_O     => RD_IDX_O,
         RT_DATA_O    => RT_DATA_O,
         RS_DATA_O    => RS_DATA_O,
-        WB_CTRL_O    => WB_CTRL_O,
-        MEM_CTRL_O   => MEM_CTRL_O,
+        PC_ADDR_O    => PC_ADDR_O,
+        MEM_WB_CTRL_O=> MEM_WB_CTRL_O,
         EX_CTRL_O    => EX_CTRL_O
     );
 

@@ -17,7 +17,7 @@ entity MEMORY_BANK is
 	port(
 	    RESET     : in  std_logic;
 		CLK       : in  std_logic;
-		W_R_CTRL  : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+		W_R_CTRL  : in  STD_LOGIC_VECTOR(3 DOWNTO 0);
 		ADDR      : in  std_logic_vector(INST_SIZE-1 DOWNTO 0);
 		DATA      : in  std_logic_vector(INST_SIZE-1 DOWNTO 0);
 		DATA_O    : out std_logic_vector(INST_SIZE-1 DOWNTO 0)
@@ -25,47 +25,19 @@ entity MEMORY_BANK is
 end MEMORY_BANK;
 
 architecture arch of MEMORY_BANK is
-
-    -- STRUCTURE:
-    -- Memory is 32 bit cells.
-        -- BOTH READ AND WRITE:
-            -- We need to right shift addr by 2 to access the actual address.
-            -- MIPS Memory is byte-addressable. Need to be able to storebyte and loadbyte from any given byte.
-            -- Store word and load word are however required to target an address mod 4 = 0 
-            
-        -- READ:
-        -- If reading a BYTE:
-           -- THIS NEEDS TO BE DEALT WITH IN WB STAGE
-           -- AS READING HAS A LATENCY OF 1 PERIOD. 
-    
-        -- WRITE:
-        -- If writing a byte:
-           -- Save the two lower bit -> These dictate how much we should shift the data before storing.
-           -- If 00 -> No Shifting needed.  Set WE to 0001.
-           -- If 01 -> Shift left by 8.     Set WE to 0010.
-           -- If 10 -> Shift left by 16.    Set WE to 0100.
-           -- If 11 -> Shift left by 24.    Set WE to 1000.
-        -- If writing a WORD:
-           -- No changes needed. Set WE to 1111.    
-           
-           
-        -- TO ACCOMPLISH THE ABOVE WE NEED THE FOLLOWING CONTROL SIGNALS:
-           -- WRITE/READ-CONTROL -> 2 BIT SIGNAL:
-            -- 00 -> NOT WRITING, READING BYTE.
-            -- 01 -> WRITING BYTE
-            -- 10 -> WRITING WORD
-            -- 11 -> NOT WRITING, READING WORD. 
-            
+       
     signal byte_index:  STD_LOGIC_VECTOR(1 DOWNTO 0);
     signal corrected_addr: STD_LOGIC_VECTOR(10 DOWNTO 0); -- WORD ADDR IS 11 BIT
     signal WRITE_ENABLE: STD_LOGIC_VECTOR(3 DOWNTO 0);
+    
     -- 0000 FOR READING
     -- 0001 FOR WRITING TO BYTE 0
     -- 0010 FOR WRITING TO BYTE 1
     -- 0100 FOR WRITING TO BYTE 2
     -- 1000 FOR WRITING TO BYTE 3
+    -- 0011 FOR WRITING TO LOWER HALF WORD
+    -- 1100 FOR WRITING TO UPPER HALF WORD
     -- 1111 FOR WRITING A WHOLE WORD. 
-    signal WRITE_ENABLE_helper: STD_LOGIC_VECTOR(3 DOWNTO 0);
     
     signal data_shift0: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
     signal data_shift8: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
@@ -73,7 +45,6 @@ architecture arch of MEMORY_BANK is
 	signal data_shift24: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 	
 	signal corrected_data_to_mem: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-    signal corrected_data_to_mem_helper: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
     
 	signal mem_data_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 		
@@ -81,7 +52,7 @@ begin
 
     -- SIGNALS FOR CORRECTING ADDRESS
     byte_index <= ADDR(1 DOWNTO 0);     
-    corrected_addr <= ADDR(12 DOWNTO 2); -- WORD ADDR is 11 bit // BYTE ADDR IS 13 BIT.
+    corrected_addr <= ADDR(12 DOWNTO 2); -- WORD ADDR is 11 bit 
     
     
     -- SIGNALS FOR CORRECTING DATA WRITE INPUT
@@ -91,28 +62,25 @@ begin
     data_shift24 <= DATA(7 DOWNTO 0)&L16b&L8b;
     -- Process for selecting the corrected DATA INPUT.
     
-    with byte_index select
-        WRITE_ENABLE_helper <= "0010" when "01",
-                               "0100" when "10",
-                               "1000" when "11",
-                               "0001" when others;
-
-    with byte_index select
-        corrected_data_to_mem_helper <= 
-                data_shift0     when "00",
-                data_shift8     when "01",
-                data_shift16    when "10",
-                data_shift24    when "11",
-                DATA            when others;
-
-    with W_R_CTRL select
-        WRITE_ENABLE <= WRITE_ENABLE_helper when "01",
-                        "0000" when "00",
-                        "1111" when "10",
-                        "0000" when others;
-    
-    corrected_data_to_mem <= corrected_data_to_mem_helper when W_R_CTRL = "01" else DATA;
-    
+    WRITE_ENABLE <=
+           "0001" when BYTE_INDEX = "00" AND W_R_CTRL = "1101" else
+           "0010" when BYTE_INDEX = "01" AND W_R_CTRL = "1101" else
+           "0100" when BYTE_INDEX = "10" AND W_R_CTRL = "1101" else
+           "1000" when BYTE_INDEX = "11" AND W_R_CTRL = "1101" else
+           "0011" when BYTE_INDEX = "00" AND W_R_CTRL = "1110" else
+           "1100" when BYTE_INDEX = "10" AND W_R_CTRL = "1110" else
+           "1111" when W_R_CTRL = "1111" else
+           "0000";        
+        
+    corrected_data_to_mem <=
+           data_shift0 when BYTE_INDEX = "00" AND W_R_CTRL =  "1101" else
+           data_shift8 when BYTE_INDEX = "01" AND W_R_CTRL =  "1101" else
+           data_shift16 when BYTE_INDEX = "10" AND W_R_CTRL = "1101" else
+           data_shift24 when BYTE_INDEX = "11" AND W_R_CTRL = "1101" else
+           data_shift0 when BYTE_INDEX = "00" AND W_R_CTRL =  "1110" else
+           data_shift16 when BYTE_INDEX = "10" AND W_R_CTRL = "1110" else
+           data_shift0;
+        
 -- xpm_memory_spram: Single Port RAM
 -- Xilinx Parameterized Macro, version 2024.2
 xpm_memory_spram_inst : xpm_memory_spram

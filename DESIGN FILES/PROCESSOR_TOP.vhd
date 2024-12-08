@@ -63,10 +63,10 @@ component ID_STAGE is
 		RT_DATA_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0);-- DATA OF RT REG (32 BIT)		
 		RD_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[15-11] IDX OF RD 	
 		RT_IDX_O        : out STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0); -- INST[20-16] IDX OF RT
+		PC_ADDR_O       : out STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0); -- PC_ADDR_O
 		
 		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG;				              -- CONTROL FOR WB STAGE
-		MEM_CTRL_O		: out MEM_CTRL_REG;                           -- CONTROL FOR MEM STAGE
+		MEM_WB_CTRL_O   : out MEM_WB_CTRL_REG;                           -- CONTROL FOR MEM STAGE
 		EX_CTRL_O       : out EX_CTRL_REG;			                  -- CONTROL FOR EX STAGE
 	    
 	    --OUTPUTS TO IF STAGE
@@ -89,11 +89,11 @@ component EX_STAGE is
 		OFFSET_S	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		OFFSET_U	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
-		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);			 				
+		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
+		PC_ADDR         : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);			 				
 		
-		--CONTROL Inputs		
-		WB_CTRL			: in WB_CTRL_REG; 				
-		MEM_CTRL		: in MEM_CTRL_REG;				
+		--CONTROL Inputs						
+		MEM_WB_CTRL		: in MEM_WB_CTRL_REG;				
 		EX_CTRL			: in EX_CTRL_REG;		     	      
 		
 		--OUTPUTS			
@@ -101,9 +101,8 @@ component EX_STAGE is
 		RT_DATA_O		: out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
-		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG;				
-		MEM_CTRL_O		: out MEM_CTRL_REG			
+		--Control Outputs			
+		MEM_WB_CTRL_O   : out MEM_WB_CTRL_REG			
 	);
 end component EX_STAGE;
 
@@ -118,9 +117,8 @@ component MEM_STAGE is
 		RT_RD_IDX		: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		REG_DATA        : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 				
-		--CONTROL Inputs		
-		WB_CTRL			: in WB_CTRL_REG; 				
-		MEM_CTRL		: in MEM_CTRL_REG;				
+		--CONTROL Inputs					
+		MEM_WB_CTRL		: in MEM_WB_CTRL_REG;				
 		
 		--OUTPUTS	(REGISTERED)		
 		MEM_DATA_O		: out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);	
@@ -128,8 +126,7 @@ component MEM_STAGE is
 		REG_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
 		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG;	
-		MEM_CTRL_O		: out MEM_CTRL_REG;
+		MEM_WB_CTRL_O   : out MEM_WB_CTRL_REG;
 		byte_idx_O      : out STD_LOGIC_VECTOR(1 DOWNTO 0)				
 	);
 end component MEM_STAGE;
@@ -140,9 +137,8 @@ component WB_STAGE is
         REG_IDX : in STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);
         REG_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         MEM_DATA: in STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-        WB_CTRL : in WB_CTRL_REG;
-        MEM_CTRL: in MEM_CTRL_REG;
         byte_idx: in STD_LOGIC_VECTOR(1 DOWNTO 0);
+        MEM_WB_CTRL: in MEM_WB_CTRL_REG;
         
         REG_DATA_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
         REG_IDX_O : out STD_LOGIC_VECTOR(ADDR_SIZE-1 DOWNTO 0);
@@ -157,31 +153,29 @@ signal INSTRUCTION_IF_ID:	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0
 signal PC_ADDR_IF_ID    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');	
 
 -- SIGNALS FROM ID
-signal OFFSET_ID_EX_S     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');
-signal OFFSET_ID_EX_U     :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');			
+signal OFFSET_ID_EX_S   :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');
+signal OFFSET_ID_EX_U   :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');			
 signal RS_DATA_ID_EX    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');		
 signal RT_DATA_ID_EX    :	STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');					
 signal RD_IDX_ID_EX     :	STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0):=(others => '0');			
 signal RT_IDX_ID_EX     :	STD_LOGIC_VECTOR (ADDR_SIZE-1 DOWNTO 0):=(others => '0');
-signal WB_CTRL_ID_EX    :	WB_CTRL_REG;
-signal MEM_CTRL_ID_EX	:	MEM_CTRL_REG;
+signal MEM_WB_CTRL_ID_EX:	MEM_WB_CTRL_REG;
 signal EX_CTRL_ID_EX    :	EX_CTRL_REG;
 signal PC_SEL_ID_IF     :   STD_LOGIC;
 signal PC_ADDR_ID_IF    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');
+signal PC_ADDR_ID_EX    :   STD_LOGIC_VECTOR (INST_SIZE-1 DOWNTO 0):=(others => '0');
 
 -- SIGNALS FROM EX
 signal RESULT_EX_MEM    : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0):=(others => '0');	
 signal RT_DATA_EX_MEM	: STD_LOGIC_VECTOR (INST_SIZE-1 downto 0):=(others => '0');	
-signal RT_RD_IDX_EX_MEM : STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0):=(others => '0');
-signal WB_CTRL_EX_MEM   : WB_CTRL_REG;				
-signal MEM_CTRL_EX_MEM	: MEM_CTRL_REG;
+signal RT_RD_IDX_EX_MEM : STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0):=(others => '0');		
+signal MEM_WB_CTRL_EX_MEM: MEM_WB_CTRL_REG;
 
 -- SIGNALS FROM MEM
 signal MEM_DATA_MEM_WB	: STD_LOGIC_VECTOR(INST_SIZE-1 downto 0):=(others => '0');	
 signal REG_DATA_MEM_WB  : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0):=(others => '0');	
 signal REG_IDX_MEM_WB   : STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0):=(others => '0');
-signal WB_CTRL_MEM_WB   : WB_CTRL_REG;
-signal MEM_CTRL_MEM_WB  : MEM_CTRL_REG;
+signal MEM_WB_CTRL_MEM_WB: MEM_WB_CTRL_REG;
 signal byte_idx_MEM_WB  : STD_LOGIC_VECTOR(1 DOWNTO 0);
 
 -- SIGNALS FROM WB
@@ -232,11 +226,11 @@ MIPS_ID: ID_STAGE port map(
 		RS_DATA_O       => RS_DATA_ID_EX,		
 		RT_DATA_O       => RT_DATA_ID_EX,				
 		RD_IDX_O        => RD_IDX_ID_EX,		
-		RT_IDX_O        => RT_IDX_ID_EX,		
+		RT_IDX_O        => RT_IDX_ID_EX,
+		PC_ADDR_O       => PC_ADDR_ID_EX,		
 		
 		--Control Outputs
-		WB_CTRL_O       => WB_CTRL_ID_EX,						  
-		MEM_CTRL_O		=> MEM_CTRL_ID_EX,		                  
+		MEM_WB_CTRL_O	=> MEM_WB_CTRL_ID_EX,		                  
 		EX_CTRL_O       => EX_CTRL_ID_EX,
 		
 		--OUTPUTS TO IF STAGE
@@ -257,11 +251,11 @@ MIPS_EX: EX_STAGE port map(
 		OFFSET_S		=> OFFSET_ID_EX_S,
 		OFFSET_U		=> OFFSET_ID_EX_U,		
 		RT_IDX			=> RT_IDX_ID_EX, 			
-		RD_IDX			=> RD_IDX_ID_EX,				 				
+		RD_IDX			=> RD_IDX_ID_EX,
+		PC_ADDR         => PC_ADDR_ID_EX,				 				
 		
 		--CONTROL Inputs		
-		WB_CTRL			=> WB_CTRL_ID_EX,				
-		MEM_CTRL		=> MEM_CTRL_ID_EX,					
+		MEM_WB_CTRL		=> MEM_WB_CTRL_ID_EX,					
 		EX_CTRL			=> EX_CTRL_ID_EX,		     	      
 		
 		--OUTPUTS			
@@ -269,9 +263,8 @@ MIPS_EX: EX_STAGE port map(
 		RT_DATA_O		=> RT_DATA_EX_MEM,		
 		RT_RD_IDX_O	    => RT_RD_IDX_EX_MEM,		
 		
-		--Control Outputs
-		WB_CTRL_O       => WB_CTRL_EX_MEM,				
-		MEM_CTRL_O		=> MEM_CTRL_EX_MEM
+		--Control Outputs		
+		MEM_WB_CTRL_O		=> MEM_WB_CTRL_EX_MEM
         );
 
 MIPS_MEM: MEM_STAGE port map (
@@ -285,8 +278,7 @@ MIPS_MEM: MEM_STAGE port map (
 		REG_DATA        => RESULT_EX_MEM,	
 				
 		--CONTROL Inputs		
-		WB_CTRL			=> WB_CTRL_EX_MEM,			
-		MEM_CTRL		=> MEM_CTRL_EX_MEM,	
+		MEM_WB_CTRL		=> MEM_WB_CTRL_EX_MEM,	
 		
 		--OUTPUTS	(REGISTERED)		
 		MEM_DATA_O		=> MEM_DATA_MEM_WB,	
@@ -294,8 +286,7 @@ MIPS_MEM: MEM_STAGE port map (
 		REG_IDX_O	    => REG_IDX_MEM_WB,	
 		
 		--Control Outputs
-		WB_CTRL_O       => WB_CTRL_MEM_WB,
-		MEM_CTRL_O		=> MEM_CTRL_MEM_WB,
+		MEM_WB_CTRL_O	=> MEM_WB_CTRL_MEM_WB,
 		byte_idx_O      => byte_idx_MEM_WB		
         );
         
@@ -305,8 +296,7 @@ MIPS_WB: WB_STAGE port map(
         REG_IDX         => REG_IDX_MEM_WB,
         REG_DATA        => REG_DATA_MEM_WB,
         MEM_DATA        => MEM_DATA_MEM_WB,
-        WB_CTRL         => WB_CTRL_MEM_WB,
-        MEM_CTRL        => MEM_CTRL_MEM_WB,
+        MEM_WB_CTRL     => MEM_WB_CTRL_MEM_WB,
         byte_idx        => byte_idx_MEM_WB,
         
         -- OUTPUTS

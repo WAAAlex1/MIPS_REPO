@@ -17,11 +17,11 @@ entity EX_STAGE is
 		OFFSET_S	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 		OFFSET_U	    : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);		
 		RT_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
-		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);			 				
+		RD_IDX			: in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
+		PC_ADDR         : in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);		 				
 		
-		--CONTROL Inputs		
-		WB_CTRL			: in WB_CTRL_REG; 				
-		MEM_CTRL		: in MEM_CTRL_REG;				
+		--CONTROL Inputs			
+		MEM_WB_CTRL		: in MEM_WB_CTRL_REG;				
 		EX_CTRL			: in EX_CTRL_REG;		     	      
 		
 		--OUTPUTS			
@@ -29,9 +29,8 @@ entity EX_STAGE is
 		RT_DATA_O		: out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX_O	    : out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);
 		
-		--Control Outputs
-		WB_CTRL_O       : out WB_CTRL_REG;				
-		MEM_CTRL_O		: out MEM_CTRL_REG			
+		--Control Outputs			
+		MEM_WB_CTRL_O		: out MEM_WB_CTRL_REG			
 	);
 end EX_STAGE;
 
@@ -66,16 +65,14 @@ component EX_MEM_REGISTERS is
 		RT_EX		    :	in STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	 -- Propagate RT Operand
 		RT_RD_IDX_EX	:	in STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	 -- Propagate RT/RD Address
 		--Control signals
-		WB_CTRL_EX	    :	in WB_CTRL_REG; 				             -- Control signals FOR WB_STAGE
-		MEM_CTRL_EX	    :	in MEM_CTRL_REG;				             -- Control signals for MEM_STAGE
+		MEM_WB_CTRL_EX	:	in MEM_WB_CTRL_REG;				             -- Control signals for MEM/WB_STAGE
 		 						     	      
 		--OUTPUTS		            
 		ALU_RES_MEM	    :	out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0);	
 		RT_MEM		    :	out STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);	
 		RT_RD_IDX_MEM	:	out STD_LOGIC_VECTOR (ADDR_SIZE-1 downto 0);	
-		--Control signals
-	    WB_CTRL_MEM	    :	out WB_CTRL_REG; 				             
-		MEM_CTRL_MEM	:	out MEM_CTRL_REG	    
+		--Control signals				             
+		MEM_WB_CTRL_MEM	:	out MEM_WB_CTRL_REG	    
         );
 end component EX_MEM_REGISTERS;
 
@@ -90,6 +87,7 @@ end component EX_MEM_REGISTERS;
 
     --SIGNALS FOR ALU
 	signal ALU_RES_INTERNAL	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
+	signal RESULT_INTERNAL     : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 	signal OFFSET              : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 
 begin
@@ -98,11 +96,14 @@ begin
 
 -- MUXES    -------------------------------------------------------
     -- RT_RD_IDX MUX
-    -- RT_RD_IDX_INTERNAL = RT_IDX(instr[20-16]) when ALUTYPE = 0 (I-TYPE)
-    -- RT_RD_IDX_INTERNAL = RT_IDX(instr[15-11]) when ALUTYPE = 1 (R-TYPE)
+    -- RT_RD_IDX_INTERNAL = RT_IDX(instr[20-16]) when ALUTYPE = 00 (I-TYPE)
+    -- RT_RD_IDX_INTERNAL = RT_IDX(instr[15-11]) when ALUTYPE = 10 OR 01 (R-TYPE)
+    -- RT_RD_IDX_INTERNAL = "11111" (31)         when ALUTYPE = 11 (JAL)
     with EX_CTRL.ALUTYPE select RT_RD_IDX_INTERNAL <=
-           RT_IDX when '0',
-           RD_IDX when others;
+           RD_IDX when "10",        -- JALR (R-TYPE) INSTRUCTION
+           RD_IDX when "01",        -- R-TYPE INTRUCTION
+           b"11111" when "11",      -- JAL INSTRUCTION (PROPAGATE REG31)
+           RT_IDX when others;      -- I-TYPE INSTRUCTION
                
     --ALU INPUT MUX ON RT
     with EX_CTRL.ALUSrc select ALU_REG_INTERNAL2 <=
@@ -117,7 +118,13 @@ begin
     with EX_CTRL.ALUOpSelect select OFFSET <=
                     OFFSET_U when ADDU,
                     OFFSET_U when SUBU,
-                    OFFSET_S when others;            
+                    OFFSET_S when others;       
+    
+    -- CHOOSE PC_ADDR OR ALU_RESULT AS RESULT OUTPUT VALUE.
+    -- IF JUMP WE MUST PROPAGATE THE PC_ADDR THROUGH THE PIPELINE                
+    with EX_CTRL.ALUTYPE(1) select RESULT_INTERNAL <=
+           PC_ADDR when '0',
+           ALU_RES_INTERNAL when others;                   
 
 -- INSTANTIATE COMPONENTS -----------------------------------------
 
@@ -142,20 +149,18 @@ EX_MEM_REGS: EX_MEM_REGISTERS PORT MAP(
 		RESET => RESET,
 		
 		-- INPUTS PROPAGATED THROUGH REGISTER
-		ALU_RES_EX    => ALU_RES_INTERNAL,	    
+		ALU_RES_EX    => RESULT_INTERNAL,	    
 		RT_EX         => RT_DATA,		   
 		RT_RD_IDX_EX  => RT_RD_IDX_INTERNAL,
 		--Control signals
-		WB_CTRL_EX	  => WB_CTRL,
-		MEM_CTRL_EX	  => MEM_CTRL, 
+		MEM_WB_CTRL_EX	  => MEM_WB_CTRL, 
 		 						     	      
 		--OUTPUTS		            
 		ALU_RES_MEM	  => RESULT_O,
 		RT_MEM		  => RT_DATA_O,
 		RT_RD_IDX_MEM => RT_RD_IDX_O,		
-		--Control signals
-	    WB_CTRL_MEM	  => WB_CTRL_O,			             
-		MEM_CTRL_MEM  => MEM_CTRL_O
+		--Control signals		             
+		MEM_WB_CTRL_MEM  => MEM_WB_CTRL_O
         );
 
 end ARCH_EX;
