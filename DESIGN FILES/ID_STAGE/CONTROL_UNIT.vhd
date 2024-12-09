@@ -83,7 +83,7 @@ begin
     SLTIU   <= '1' when OPCODE = "001011" else '0';
     ANDI    <= '1' when OPCODE = "001100" else '0';
     ORI     <= '1' when OPCODE = "001101" else '0';
-    XORI    <= '1' when OPCODE = "001101" else '0';
+    XORI    <= '1' when OPCODE = "001110" else '0';
     LUI     <= '1' when OPCODE = "001111" else '0';
     LB      <= '1' when OPCODE = "100000" else '0';
     LBU     <= '1' when OPCODE = "100100" else '0';

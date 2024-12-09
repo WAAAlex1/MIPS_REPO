@@ -87,7 +87,7 @@ end component EX_MEM_REGISTERS;
 
     --SIGNALS FOR ALU
 	signal ALU_RES_INTERNAL	   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0); 
-	signal RESULT_INTERNAL     : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
+	signal RESULT_INTERNAL_1   : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 	signal OFFSET              : STD_LOGIC_VECTOR (INST_SIZE-1 downto 0);
 
 begin
@@ -116,15 +116,12 @@ begin
            OFFSET  when others;      
            
     with EX_CTRL.ALUOpSelect select OFFSET <=
-                    OFFSET_U when ADDU,
-                    OFFSET_U when SUBU,
+                    OFFSET_U when ADDU | SUBU | OR0 | AND0 | XOR0 | NOR0,
                     OFFSET_S when others;       
     
     -- CHOOSE PC_ADDR OR ALU_RESULT AS RESULT OUTPUT VALUE.
-    -- IF JUMP WE MUST PROPAGATE THE PC_ADDR THROUGH THE PIPELINE                
-    with EX_CTRL.ALUTYPE(1) select RESULT_INTERNAL <=
-           PC_ADDR when '0',
-           ALU_RES_INTERNAL when others;                   
+    -- IF JUMP WE MUST PROPAGATE THE PC_ADDR THROUGH THE PIPELINE  
+    RESULT_INTERNAL_1 <= ALU_RES_INTERNAL when EX_CTRL.ALUTYPE(EX_CTRL.ALUTYPE'high) = '0' else PC_ADDR;                             
 
 -- INSTANTIATE COMPONENTS -----------------------------------------
 
@@ -149,7 +146,7 @@ EX_MEM_REGS: EX_MEM_REGISTERS PORT MAP(
 		RESET => RESET,
 		
 		-- INPUTS PROPAGATED THROUGH REGISTER
-		ALU_RES_EX    => RESULT_INTERNAL,	    
+		ALU_RES_EX    => RESULT_INTERNAL_1,	    
 		RT_EX         => RT_DATA,		   
 		RT_RD_IDX_EX  => RT_RD_IDX_INTERNAL,
 		--Control signals

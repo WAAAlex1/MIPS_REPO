@@ -13,28 +13,16 @@ entity INST_MEM is
             RESET     : in  std_logic;
             CLK       : in  std_logic;
             ADDR      : in  STD_LOGIC_VECTOR (8 DOWNTO 0);
-            PC_SEL    : in  STD_LOGIC;
             DATA_O    : out std_logic_vector(INST_SIZE-1 DOWNTO 0)
         );
 end INST_MEM;
 
 architecture arch of INST_MEM is
 
-    signal mem_data_O: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
     signal din: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
-    
-    signal pc_sel_old: STD_LOGIC;
    
  begin
-    DATA_O <= mem_data_O when pc_sel_old = '0' else x"00000020";
     din <= (others=>'0'); -- NOTE: NEVER WRITING TO INSTRUCTION MEMORY
-
-    process(CLK)
-    begin
-        if rising_edge(CLK) then
-            pc_sel_old <= PC_SEL;
-        end if;
-    end process;
 
 -- xpm_memory_spram: Single Port RAM
 -- Xilinx Parameterized Macro, version 2024.2
@@ -74,7 +62,7 @@ port map (
    dbiterra => open,            -- 1-bit output: Status signal to indicate double bit error occurrence
                                      -- on the data output of port A.
 
-   douta => mem_data_O,         -- READ_DATA_WIDTH_A-bit output: Data output for port A read operations.
+   douta => DATA_O,         -- READ_DATA_WIDTH_A-bit output: Data output for port A read operations.
    sbiterra => open,                -- 1-bit output: Status signal to indicate single bit error occurrence
                                      -- on the data output of port A.
    addra => ADDR,               -- ADDR_WIDTH_A-bit input: Address for port A write and read operations.

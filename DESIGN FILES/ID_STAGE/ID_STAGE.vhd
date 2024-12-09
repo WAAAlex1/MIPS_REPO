@@ -141,7 +141,8 @@ component BRANCH_CONTROL is
         
         -- OUTPUTS
         PC_SEL:      out STD_LOGIC;
-        PC_ADDR_O:   out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+        PC_ADDR_O:   out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        PC_ADDR_EX:  out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
     );
 end component BRANCH_CONTROL;
 
@@ -224,9 +225,9 @@ BRA_CTRL: BRANCH_CONTROL port map(
         
         -- OUTPUTS
         PC_SEL => PC_SEL_ID_IF,
-        PC_ADDR_O => PC_ADDR_INTERNAL
+        PC_ADDR_O => PC_ADDR_ID_IF,
+        PC_ADDR_EX => PC_ADDR_INTERNAL
 );
-PC_ADDR_ID_IF <= PC_ADDR_INTERNAL;
 
 ID_EX_REGS: ID_EX_REGISTERS PORT MAP(
         -- INPUTS

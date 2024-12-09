@@ -22,7 +22,8 @@ entity BRANCH_CONTROL is
         
         -- OUTPUTS
         PC_SEL: out STD_LOGIC;
-        PC_ADDR_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
+        PC_ADDR_O: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
+        PC_ADDR_EX: out STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0)
     );
 end BRANCH_CONTROL;
 
@@ -51,9 +52,9 @@ signal PC_ADDR_J: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0);
 begin
 
 -- HELPER SIGNALS FOR PC_SEL
-ZERO <= '1' when signed(RS_DATA) = 0 else '0';
-GTZ  <= '1' when signed(RS_DATA) > 0 else '0'; 
-LTZ  <= '1' when signed(RS_DATA) < 0 else '0'; 
+ZERO <= '1' when RS_DATA = x"0000_0000" else '0';
+GTZ  <= '1' when RS_DATA(RS_DATA'high) = '0' AND RS_DATA /= x"0000_0000" else '0'; 
+LTZ  <= '1' when RS_DATA(RS_DATA'high) = '1' else '0'; 
 EQ   <= '1' when RS_DATA = RT_DATA else '0';
 
 -- GET PC_SEL
@@ -72,7 +73,7 @@ with BRANCH_CTRL SELECT PC_SEL <=
 
 -- HELPER SIGNALS FOR PC_ADDR_O
 PC_ADDR_J <= PC_ADDR(31 downto 26) & INSTR_INDEX;
-PC_ADDER: ADD32x32x32_U_S
+ADDER: ADD32x32x32_U_S
   PORT MAP (
     A => PC_ADDR,
     B => OFFSET,
@@ -92,6 +93,8 @@ with BRANCH_CTRL SELECT PC_ADDR_O <=
         PC_ADDR_J when "0010",  -- JAL
         RS_DATA   when "0011",  -- JR
         RS_DATA   when "0100",  -- JALR
-        PC_ADDR   when others;
+        x"0000_0000"   when others;
+
+PC_ADDR_EX <= PC_ADDR;
 
 end BRANCH_ARCH;

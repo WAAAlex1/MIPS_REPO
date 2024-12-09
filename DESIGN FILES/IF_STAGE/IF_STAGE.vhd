@@ -29,7 +29,6 @@ component INST_MEM is
    port(
        RESET     : in  std_logic;
        CLK       : in  std_logic;
-       PC_SEL    : in  STD_LOGIC;
        ADDR      : in  STD_LOGIC_VECTOR(8 DOWNTO 0);
        DATA_O    : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0)
        );
@@ -53,9 +52,6 @@ component IF_ID_R is
        );
 end component IF_ID_R; 
 
--- SIGNAL DECLARATIONS
---...
-
 begin
 
     -- COMPONENT INSTANTIATION
@@ -66,7 +62,6 @@ begin
         PORT MAP(
             RESET     => RESET,
             CLK       => CLK,
-            PC_SEL    => PC_SEL,
             ADDR      => PC_ADDR(8 DOWNTO 0),
             DATA_O    => MEM_DATA_O
         );
@@ -80,11 +75,10 @@ begin
            CLK => CLK,
            RESET => RESET,
            RESET_PC => RESET_PC,
-           PC_IN => PC_ADDR, -- COMPUTED ADDDRESS
+           PC_IN => PC_INCd, -- COMPUTED ADDDRESS
            PC_OUT => PC_o
          );
               
-    
     -- PC REGISTER WITH LOGIC FOR SELECTING NEXT PC          
     process (CLK, RESET_PC, BRANCH_PC, PC_INCd, RESET)
     begin   
