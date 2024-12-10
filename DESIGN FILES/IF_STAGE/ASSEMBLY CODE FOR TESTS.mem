@@ -1,62 +1,3 @@
-
-
-ARITHMETIC TEST:
-
-    ORI $t0 $zero 0x0002
-    ORI $t1 $zero 0x0005
-    SUB $t0 $t0 $t1
-    ADD $t2 $t0 $t1
-    ADDU $t3 $t0 $t1
-    SUB $t4 $t0 $t1
-    SUBU $t5 $t0 $t1
-    ADDI $t6 $t0 0x0004
-
-    IF TEST GOES WELL:
-        EXPECT:
-            t0 / R8 = 0xFFFF_FFFD
-            t1 / R9 = 0x0005
-            t2 / R10 = 0x0002
-            t3 / R11 = 0x0002
-            t4 / R12 = 0xFFFF_FFF8
-            t5 / R13 = 0xFFFF_FFF8
-            t6 / R14 = 0x0001
-
-BITWISE TEST:
-
-    ADDI $v0 $zero 0x00FF
-    SRL $v1 $v0 0x0001
-    SLL $a0 $v1 0x0010
-    SRL $a1 $a0 0x0011
-    
-    IF TEST GOES WELL:
-        EXPECT:
-            v0 / R2 = 0x00FF
-            v1 / R3 = 0x007F
-            a0 / R4 = 0x007F_0000
-            a1 / R5 = 0x003F
-    
-BRANCHING TEST:
-
-    ADDI $v0 $zero 0x0004   -- v0 should equal 4
-    ADDI $v1 $zero 0x0004   -- v1 should equal 4
-    BEQ  $v0 $v1   0x0002   -- skip next two lines if v0 = v1 (should be the case)
-    ADDI $a0 $zero 0x0004   -- a0 should be equal to 4
-    BEQ $zero $zero 0x0005  -- always skip the next five lines
-    ADDI $a0 $zero 0x0003   -- a0 should equal 3
-    BNE  $v1 $a0   0x0001   -- Skip the next line if v1 != a0 (should be the case)
-    BEQ  $zero $zero 0x0002 -- Always skip the next two lines
-    ADDI $a1 $zero 0x0001   -- Add a1 should equal 1
-    BEQ  $zero $zero 0x0001 -- Always skip the next line
-    ADDI $a1 $zero 0x000C   -- a1 should equal 12 
-    
-    IF TEST GOES SMOOTHLY: 
-        EXPECT: 
-            v0 / R2 = 4
-            v1 / R3 = 4
-            a0 / R4 = 3
-            a1 / R5 = 1
-
-
 FORWARDING TEST:
 
     LUI $v0 0xFFFF
@@ -84,34 +25,29 @@ FORWARDING TEST:
             a2 / R6 = 0xFFFF_FFFE
             a3 / R7 = 0x0001        -- Wont have time to load the word before it is used
                                     -- SHOULD STALL ONE STAGE, BUT NOT IMPLEMENTED
-
-MEMORY TEST: (COMPLETE)
-
-    SW r1, 32(r0)
-    SW r2, 36(r0)
-    SW r3, 40(r0)    
-    LW r10, 32(r0)
-    LW r11, 36(r0)
-    LW r12, 40(r0)
-    LB r10, 32(r0)
-    LB r11, 36(r0)
-    LBU r12, 36(r0)
-    LBU r10, 40(r0)
-    LBU r11, 41(r0)
-    LBU r12, 42(r0)
-    LBU r12, 43(r0)
-    SB r4, 44(r0)
-    SB r4, 45(r0)
-    SB r4, 46(r0)
-    SB r4, 47(r0)
-    LW r12, 44(r0)
-    
-    IF TEST GOES SMOOTHLY:
-        (see waveform)
-        
 		
+ASSEMBLY + MACHINE CODE FOR ACTUAL DEMO PROGRAMS:
 
-TESTING:
+PROGRAM 0: SHIFTING A VALUE RIGHT AND LEFT 20010001
+
+	400 ADDI r1 r0 0x01				20010001
+	401 LUI  r2 0x8000				3C028000
+	402 ADDI r3 r0 0x01   			20030001
+	403 ADD  r0 r0 r0				00000020
+	LOOP:
+	404 ADD	 r0 r0 r0 				00000020
+	405 ADD  r0 r0 r0				00000020
+	406 BEQ  r3 r1 0x0003			10610003
+	407 ADD  r0 r0 r0				00000020
+	408 SLL  r3 r3 0x1				00031840
+	409 J    0x194					08000194
+	410 ADD  r0 r0 r0 				00000020
+	411 SRL  r3 r3 0x1				00031842
+	412 J    0x194					08000194
+	413 ADD  r0 r0 r0 				00000020
+	
+PROGRAM 1: (ALSO A TEST PROGRAM)
+			PROGRAM WHICH USES ALL INSTRUCTIONS TO PUT VALUES IN REGISTERS
 
 	0	ADDIU R2 R2 0xF000			2442F000		//0000F000
 	1	ADD	  R0 R0 R0				00000020
@@ -125,88 +61,88 @@ TESTING:
 	9	ADD	  R0 R0 R0				00000020
 	10  ADD   R0 R0 R0 				00000020
 	11  OR    R7 R6 R5				00C53825		//0000AAAB	
-	11  AND   R8 R6 R3				00C34024		//0000A000
-	12  ANDI  R9 R6 0xAA55			30C9AA55		//0000AA00
-	13	ADD   R0 R0 R0 				00000020		
-	14  XOR   R10 R7 R6				00E65026		//00000001
-	15  XORI  R11 R3 0x1111			386B1111		//0001F111
-	16  NOR   R12 R3 R2				00626027		//FFFE0FFF
-	17  SUBU  R13 R7 R6				00E66823		//00000001
-	18  SUBU  R14 R6 R7				00C77023		//FFFFFFFF
-    19  ADD   R0 R0 R0 				00000020		
-	20  SLT   R15 R12 R10			018A782A		//00000001
-	21  SLTU  R16 R10 R12 			014C802B		//00000001
-	22  LUI   R17 0x0FFF			3C110FFF		//0FFF0000
-	22  LUI   R18 0xF111			3C12F111		//F1110000
-	23  SLL   R19 R9 0x0004			00099900		//000AA000
-	24  SRL   R20 R9 0x0004			0009A102		//00000AA0
-	25  SRA   R21 R12 0x000C		000CAB03		//FFFFFFE0
-	26  SLLV  R22 R17 R13			01B1B004		//1FFE0000
-	27  SRLV  R23 R18 R10			0152B806		//78888000
-	28  SRAV  R24 R18 R10			0152C007		//F8888000
-	29  BEQ   R10 R13 0x0002		114D0002		//TAKEN
-	30  ADD   R0 R0 R0 				00000020	
-	31  ORI   R25 R17 0xAAAA		3639AAAA
-	32  ORI   R25 R17 0xBBBB		3639BBBB		//FFFFBBBB
-	33  BNE   R12 R14 0x0002		158E0002		//TAKEN
-	34  ADD   R0 R0 R0 				00000020
-	35  ORI   R25 R17 0xCCCC		3639CCCC
-	36  ORI   R25 R17 0xDDDD		3639DDDD		//FFFFDDDD
-	37  BNE   R10 R13 0x0002		154D0002		//NOT TAKEN
-	38  ADD   R0 R0 R0 				00000020
-	39  ORI   R25 R17 0xEEEE		3639EEEE		//FFFFEEEE
-	40  ORI   R25 R17 0xFFFF		3639FFFF		//FFFFFFFF
-	41	BLEZ  R18 0x0002			1A400002		//TAKEN
-	42  ADD   R0 R0 R0				00000020
-	43  ORI   R25 R17 0x1111		36391111
-	44  ORI   R25 R17 0x2222		36392222		//FFFF2222
-	45	BLEZ  R4 0x0002				18800002		//TAKEN
-	46  ADD   R0 R0 R0				00000020
-	47  ORI   R25 R17 0x3333		36393333
-	48  ORI   R25 R17 0x4444		36394444		//FFFF4444
-	49	BLEZ  R17 0x0002			1A200002		//NOT TAKEN
-	50  ADD   R0 R0 R0				00000020
-	51  ORI   R25 R17 0x5555		36395555		//FFFF5555
-	52  ORI   R25 R17 0x6666		36396666		//FFFF6666
-	53	BGEZ  R18 0x0002			06410002		//NOT TAKEN
-	54  ADD   R0 R0 R0				00000020
-	55  ORI   R25 R17 0x1111		36391111		//FFFF1111
-	56  ORI   R25 R17 0x2222		36392222		//FFFF2222
-	57	BGEZ  R4 0x0002				04810002		//TAKEN
-	58  ADD   R0 R0 R0				00000020
-	59  ORI   R25 R17 0x3333		36393333	
-	60  ORI   R25 R17 0x4444		36394444		//FFFF4444
-	61	BGEZ  R17 0x0002			06210002		//TAKEN
-	62  ADD   R0 R0 R0				00000020
-	63  ORI   R25 R17 0x5555		36395555
-	64  ORI   R25 R17 0x6666		36396666		//FFFF6666
-	65	BGTZ  R18 0x0002			1E400002		//NOT TAKEN
-	66  ADD   R0 R0 R0				00000020
-	67  ORI   R25 R17 0x1111		36391111		//FFFF1111
-	68  ORI   R25 R17 0x2222		36392222		//FFFF2222
-	69	BGTZ  R4 0x0002				1C800002		//NOT TAKEN
-	70  ADD   R0 R0 R0				00000020
-	71  ORI   R25 R17 0x3333		36393333		//FFFF3333
-	72  ORI   R25 R17 0x4444		36394444		//FFFF4444
-	73	BGTZ  R17 0x0002			1E200002		//TAKEN
-	74  ADD   R0 R0 R0				00000020
-	75  ORI   R25 R17 0x5555		36395555		
-	76  ORI   R25 R17 0x6666		36396666		//FFFF6666
-	77	BLTZ  R18 0x0002			06400002		//TAKEN
-	78  ADD   R0 R0 R0				00000020
-	79  ORI   R25 R17 0x1111		36391111
-	80  ORI   R25 R17 0x2222		36392222		//FFFF2222
-	81	BLTZ  R4 0x0002				04800002		//NOT TAKEN
-	82  ADD   R0 R0 R0				00000020
-	83  ORI   R25 R17 0x3333		36393333		//FFFF3333
-	84  ORI   R25 R17 0x4444		36394444		//FFFF4444
-	85	BLTZ  R17 0x0002			06200002		//NOT TAKEN
-	86  ADD   R0 R0 R0				00000020
-	87  ORI   R25 R17 0x5555		36395555		//FFFF5555
-	88  ORI   R25 R17 0x6666		36396666		//FFFF6666
-	89  ADDI  R26 R26 0x8C			235A008C
-	91	J 	  0x64					08000064		// JUMP TO 100
-	92  ADD   R0 R0 R0				00000020
+	12  AND   R8 R6 R3				00C34024		//0000A000
+	13  ANDI  R9 R6 0xAA55			30C9AA55		//0000AA00
+	14	ADD   R0 R0 R0 				00000020		
+	15  XOR   R10 R7 R6				00E65026		//00000001
+	16  XORI  R11 R3 0x1111			386B1111		//0001F111
+	17  NOR   R12 R3 R2				00626027		//FFFE0FFF
+	18  SUBU  R13 R7 R6				00E66823		//00000001
+	19  SUBU  R14 R6 R7				00C77023		//FFFFFFFF
+    20  ADD   R0 R0 R0 				00000020		
+	21  SLT   R15 R12 R10			018A782A		//00000001
+	22  SLTU  R16 R10 R12 			014C802B		//00000001
+	23  LUI   R17 0x0FFF			3C110FFF		//0FFF0000
+	24  LUI   R18 0xF111			3C12F111		//F1110000
+	25  SLL   R19 R9 0x0004			00099900		//000AA000
+	26  SRL   R20 R9 0x0004			0009A102		//00000AA0
+	27  SRA   R21 R12 0x000C		000CAB03		//FFFFFFE0
+	28  SLLV  R22 R17 R13			01B1B004		//1FFE0000
+	29  SRLV  R23 R18 R10			0152B806		//78888000
+	30  SRAV  R24 R18 R10			0152C007		//F8888000
+	31  BEQ   R10 R13 0x0002		114D0002		//TAKEN
+	32  ADD   R0 R0 R0 				00000020	
+	33  ORI   R25 R17 0xAAAA		3639AAAA
+	34  ORI   R25 R17 0xBBBB		3639BBBB		//FFFFBBBB
+	35  BNE   R12 R14 0x0002		158E0002		//TAKEN
+	36  ADD   R0 R0 R0 				00000020
+	37  ORI   R25 R17 0xCCCC		3639CCCC
+	38  ORI   R25 R17 0xDDDD		3639DDDD		//FFFFDDDD
+	39  BNE   R10 R13 0x0002		154D0002		//NOT TAKEN
+	40  ADD   R0 R0 R0 				00000020
+	41  ORI   R25 R17 0xEEEE		3639EEEE		//FFFFEEEE
+	42  ORI   R25 R17 0xFFFF		3639FFFF		//FFFFFFFF
+	43	BLEZ  R18 0x0002			1A400002		//TAKEN
+	44  ADD   R0 R0 R0				00000020
+	45  ORI   R25 R17 0x1111		36391111
+	46  ORI   R25 R17 0x2222		36392222		//FFFF2222
+	47	BLEZ  R4 0x0002				18800002		//TAKEN
+	48  ADD   R0 R0 R0				00000020
+	49  ORI   R25 R17 0x3333		36393333
+	50  ORI   R25 R17 0x4444		36394444		//FFFF4444
+	51	BLEZ  R17 0x0002			1A200002		//NOT TAKEN
+	52  ADD   R0 R0 R0				00000020
+	53  ORI   R25 R17 0x5555		36395555		//FFFF5555
+	54  ORI   R25 R17 0x6666		36396666		//FFFF6666
+	55	BGEZ  R18 0x0002			06410002		//NOT TAKEN
+	56  ADD   R0 R0 R0				00000020
+	57  ORI   R25 R17 0x1111		36391111		//FFFF1111
+	58  ORI   R25 R17 0x2222		36392222		//FFFF2222
+	59	BGEZ  R4 0x0002				04810002		//TAKEN
+	60  ADD   R0 R0 R0				00000020
+	61  ORI   R25 R17 0x3333		36393333	
+	62  ORI   R25 R17 0x4444		36394444		//FFFF4444
+	63	BGEZ  R17 0x0002			06210002		//TAKEN
+	64  ADD   R0 R0 R0				00000020
+	65  ORI   R25 R17 0x5555		36395555
+	66  ORI   R25 R17 0x6666		36396666		//FFFF6666
+	67	BGTZ  R18 0x0002			1E400002		//NOT TAKEN
+	68  ADD   R0 R0 R0				00000020
+	69  ORI   R25 R17 0x1111		36391111		//FFFF1111
+	70  ORI   R25 R17 0x2222		36392222		//FFFF2222
+	71	BGTZ  R4 0x0002				1C800002		//NOT TAKEN
+	72  ADD   R0 R0 R0				00000020
+	73  ORI   R25 R17 0x3333		36393333		//FFFF3333
+	74  ORI   R25 R17 0x4444		36394444		//FFFF4444
+	75	BGTZ  R17 0x0002			1E200002		//TAKEN
+	76  ADD   R0 R0 R0				00000020
+	77  ORI   R25 R17 0x5555		36395555		
+	78  ORI   R25 R17 0x6666		36396666		//FFFF6666
+	79	BLTZ  R18 0x0002			06400002		//TAKEN
+	80  ADD   R0 R0 R0				00000020
+	81  ORI   R25 R17 0x1111		36391111
+	82  ORI   R25 R17 0x2222		36392222		//FFFF2222
+	83	BLTZ  R4 0x0002				04800002		//NOT TAKEN
+	84  ADD   R0 R0 R0				00000020
+	85  ORI   R25 R17 0x3333		36393333		//FFFF3333
+	86  ORI   R25 R17 0x4444		36394444		//FFFF4444
+	87	BLTZ  R17 0x0002			06200002		//NOT TAKEN
+	88  ADD   R0 R0 R0				00000020
+	89  ORI   R25 R17 0x5555		36395555		//FFFF5555
+	90  ORI   R25 R17 0x6666		36396666		//FFFF6666
+	91  ADDI  R26 R26 0x8C			235A008C
+	92	J 	  0x64					08000064		// JUMP TO 100
+	93  ADD   R0 R0 R0				00000020
 	100 ORI   R25 R17 0x1111		36391111
 	101 JAL	  0x78					0C000078		// JUMP TO 120
 	102 ADD   R0 R0 R0				00000020
@@ -218,91 +154,168 @@ TESTING:
 	120 ORI   R25 R17 0x2222		36392222
 	121	ADD   R0 R0 R0				00000020
 	122	ADD   R0 R0 R0				00000020
-	123 JR    R31					03E00008		// RETURN TO 102
+	123 JR    R31					03E00008		// RETURN
 	140 ORI   R25 R17 0x4444		36394444
 	141	ADD   R0 R0 R0				00000020
 	142	ADD   R0 R0 R0				00000020
-	143 JR    R27					03600008		// RETURN TO 105 
+	143 JR    R27					03600008		// RETURN 
 	200 ORI   R25 R17 0x6666		36396666
 	201 ORI   R25 R17 0x1234		36391234 
 	202 ADDI  R28 R28 0x4			239C0004
 	203 ADDI  R29 R29 0x8			23BD0008
-	203	ADD   R0 R0 R0				00000020
-	204	ADD   R0 R0 R0				00000020 
-	205	ADD   R0 R0 R0				00000020
-	206 SB    R25 0x0(R4)			A0990000		//STORE 34
-	207 SB    R21 0x1(R4)			A0950001		//STORE E0
-	208 SB    R20 0x2(R4)			A0940002		//STORE A0
-	209 SB    R14 0x3(R4)			A08E0003		//STORE FF
-	210 SH    R7  0x0(R28)			A7870000		//STORE AAAB
-	211 SH    R11 0x2(R28)			A78B0002		//STORE F111
-	212 SW    R12 0x0(R29)			AFAC0000		//STORE FFFE0FFF
-	213 LB    R30 0x0(R4)			809E0000		//LOAD 34 (SIGNED)
-	213 LBU   R30 0x0(R4)			909E0000		//LOAD 34 (UNSIGNED)
-	214 LB    R30 0x1(R4)			809E0001		//LOAD E0 (SIGNED)
-	214 LBU   R30 0x1(R4)			909E0001		//LOAD E0 (UNSIGNED)
-	215 LB    R30 0x2(R4)			809E0002		//LOAD A0 (SIGNED)
-	215 LBU   R30 0x2(R4)			909E0002		//LOAD A0 (UNSIGNED)
-	216 LB    R30 0x3(R4)			809E0003		//LOAD FF (SIGNED)
-	216 LBU   R30 0x3(R4)			909E0003		//LOAD FF (UNSIGNED)
-	217 LH    R30 0x0(R28)			879E0000		//LOAD AAAB (SIGNED)
-	217 LHU   R30 0x0(R28)			979E0000		//LOAD AAAB (UNSIGNED)
-	218 LH    R30 0x2(R28)			879E0002		//LOAD F111 (SIGNED)
-	218 LHU   R30 0x2(R28)			979E0002		//LOAD F111 (UNSIGNED)
-	219 LW    R30 0x0(R28)			8F9E0000		//LOAD F111AAAB
-	220 LW    R30 0x0(R29)			8FBE0000		//LOAD FFFE0FFF
-	221 J     0xE5					080000E5		//JUMP HERE FOREVER
-	
- 
-ASSEMBLY + MACHINE CODE FOR ACTUAL DEMO PROGRAMS
+	204	ADD   R0 R0 R0				00000020
+	205	ADD   R0 R0 R0				00000020 
+	206	ADD   R0 R0 R0				00000020
+	207 SB    R25 0x0(R4)			A0990000		//STORE 34
+	208 SB    R21 0x1(R4)			A0950001		//STORE E0
+	209 SB    R20 0x2(R4)			A0940002		//STORE A0
+	210 SB    R14 0x3(R4)			A08E0003		//STORE FF
+	211 SH    R7  0x0(R28)			A7870000		//STORE AAAB
+	212 SH    R11 0x2(R28)			A78B0002		//STORE F111
+	213 SW    R12 0x0(R29)			AFAC0000		//STORE FFFE0FFF
+	214 LB    R30 0x0(R4)			809E0000		//LOAD 34 (SIGNED)
+	215 LBU   R30 0x0(R4)			909E0000		//LOAD 34 (UNSIGNED)
+	216 LB    R30 0x1(R4)			809E0001		//LOAD E0 (SIGNED)
+	217 LBU   R30 0x1(R4)			909E0001		//LOAD E0 (UNSIGNED)
+	218 LB    R30 0x2(R4)			809E0002		//LOAD A0 (SIGNED)
+	219 LBU   R30 0x2(R4)			909E0002		//LOAD A0 (UNSIGNED)
+	220 LB    R30 0x3(R4)			809E0003		//LOAD FF (SIGNED)
+	221 LBU   R30 0x3(R4)			909E0003		//LOAD FF (UNSIGNED)
+	222 LH    R30 0x0(R28)			879E0000		//LOAD AAAB (SIGNED)
+	223 LHU   R30 0x0(R28)			979E0000		//LOAD AAAB (UNSIGNED)
+	224 LH    R30 0x2(R28)			879E0002		//LOAD F111 (SIGNED)
+	225 LHU   R30 0x2(R28)			979E0002		//LOAD F111 (UNSIGNED)
+	226 LW    R30 0x0(R28)			8F9E0000		//LOAD F111AAAB
+	227 LW    R30 0x0(R29)			8FBE0000		//LOAD FFFE0FFF
+	228 J     0xE4					080000E4		//JUMP HERE FOREVER
 
-    PROGRAM 1: SUM OF NUMBERS FROM 0 TO 0x100
-    EXPECTED OUTPUT: R3 = 0x70807800
+    PROGRAM 2: SUM OF NUMBERS FROM 0 TO 0x0010  EXPECTED OUTPUT: R3 = 0x70807800
+    230	addiu   r1 r0 0x0010         24010010
+	231	J	0xF9					 080000F9		// JUMP TO BEGIN
+	232 add r0 r0 r0				 00000020
+	
+	PROGRAM 3: SUM OF NUMBERS FROM 0 TO 0x100  EXPECTED OUTPUT: R3 = 0x70807800
+    233	addiu   r1 r0 0x0100         24010100
+	234	J	0xF9					 080000F9		// JUMP TO BEGIN
+	235	add r0 r0 r0				 00000020
+	
+	PROGRAM 4: SUM OF NUMBERS FROM 0 TO 0xF000 EXPECTED OUTPUT: R3 = 0x70807800
+    236	addiu   r1 r0 0xF000         2401F000
+	237	J	0xF9					 080000F9		// JUMP TO BEGIN
+	238	add r0 r0 r0				 00000020
+	
+	PROGRAM 5: SUM OF NUMBERS FROM 0 TO 0xFFFF  EXPECTED OUTPUT: R3 = 0x70807800
+    239	addiu   r1 r0 0xFFFF         2401FFFF
+	240 J	0xF9					 080000F9		// JUMP TO BEGIN
+	241 add r0 r0 r0				 00000020
+	
+	PROGRAM 6: SUM OF NUMBERS FROM 0 TO 0x10FFF  EXPECTED OUTPUT: R3 = 0x70807800
+    242	LUI r1 0x0001				 3C010001
+	243	add r0 r0 r0				 00000020
+	244	add r0 r0 r0				 00000020
+	245	add r0 r0 r0				 00000020
+	246	ORI r1 r1 0x0FFF			 34210FFF
+	247	J	0xF9					 080000F9		// JUMP TO BEGIN
+	248	add r0 r0 r0				 00000020
+	
+	BEGIN
+    249	add     r2 r0 r0             00001020
+    250	add     r3 r0 r0             00001820
+    251	add     r0 r0 r0             00000020
+    252	add     r0 r0 r0             00000020
     
-    0	addiu   r1 r0 0x0100          24010100
-    1	add     r2 r0 r0              00001020
-    2	add     r3 r0 r0              00001820
-        
-    3	add     r0 r0 r0              00000020
-    4	add     r0 r0 r0              00000020
-    5	add     r0 r0 r0              00000020
+    # Main loop body
+    253	addi	r2 r2 0x1	         20420001
+    254	add     r0 r0 r0             00000020
+    255	add     r0 r0 r0             00000020
+    256	add     r0 r0 r0             00000020
+    257	addu	r3 r3 r2	         00621821
+    258	bne	    r1 r2 0xFFF8         1422FFF8		// BRANCH TO 254
+    259 add     r0 r0 r0             00000020
+    260	JAL     0x109                0C000109		// JUMP TO NEGATE
+    261 add     r0 r0 r0             00000020
+    262 J       0x107                08000107		// JUMP HERE FOREVER
+    263 add     r0 r0 r0             00000020
+	NEGATE
+	264 addi    r4 r0 0x01           20040001
+    265 add     r0 r0 r0             00000020
+    266 add     r0 r0 r0             00000020
+    267 add     r0 r0 r0             00000020    
+    268 sub     r2 r2 r4             00441022
+    269 add     r0 r0 r0             00000020
+    270 add     r0 r0 r0             00000020
+    271 add     r0 r0 r0             00000020 
+    272 bne     r2 r0 0xFFFB         1440FFFB		// BRANCH TO 272
+    273 add     r0 r0 r0             00000020 
+    274 JR      r31                  03E00008
+	275 add     r0 r0 r0 			 00000020 
     
-        # Main loop body
-    6	addi	r2 r2 0x1	          20420001
-    7	add     r0 r0 r0              00000020
-    8	add     r0 r0 r0              00000020
-    9	add     r0 r0 r0              00000020
-    10	add     r0 r0 r0              00000020
-    11	addu	r3 r3 r2	          00621821
-    12	bne	    r1 r2 0xFFF9          1422FFF8
-    13  add     r0 r0 r0              00000020
-    14	JAL     20                    0C000013
-    15  add     r0 r0 r0              00000020
-    16  J       0                     08000000
-    17  add     r0 r0 r0              00000020
-    18  add     r0 r0 r0              00000020
-    19  add     r0 r0 r0              00000020
-    20  addi    r4 r0 0x01            20040001
-    21  add     r0 r0 r0              00000020
-    22  add     r0 r0 r0              00000020
-    23  add     r0 r0 r0              00000020    
-    24  sub     r2 r2 r4              00441022
-    21  add     r0 r0 r0              00000020
-    22  add     r0 r0 r0              00000020
-    23  add     r0 r0 r0              00000020 
-    25  bne     r2 r0 0xFFFC          1440FFFB
-    26  add     r0 r0 r0              00000020 
-    27  JR      r31                   03E00008
-    
-  
-    
-    PROGRAM 2: COUNT THE NUMBER OF 1 bits in memory from MEM LOCATION 0x0001 TO 0x010
-    
-    0	addi r1 r0 0x100
-    1	add r2 r0 r0
-    2	add r3 r0 r0
-    
-    
-    
-        
-        
+	
+	PROGRAM 7: RECURSIVE FIBONACCI SEQUENCE N = 2
+	300 addi r4 r0  0x0002				20040002			//Compute 8th fibonacci number (a0)
+	301 J 0x140							08000140			// J PROLOGUE
+	302 add r0 r0 r0					00000020
+	PROGRAM 8: RECURSIVE FIBONACCI SEQUENCE N = 8
+	303 addi r4 r0  0x0008				20040008			//Compute 8th fibonacci number (a0)
+	304 J 0x140							08000140			// J PROLOGUE
+	305 add r0 r0 r0					00000020
+	PROGRAM 9: RECURSIVE FIBONACCI SEQUENCE N = 16
+	306 addi r4 r0  0x0010				20040010			//Compute 8th fibonacci number (a0)
+	307 J 0x140							08000140			// J PROLOGUE
+	308 add r0 r0 r0					00000020
+	PROGRAM 10: RECURSIVE FIBONACCI SEQUENCE N = 24
+	309 addi r4 r0  0x0018				20040018			//Compute 8th fibonacci number (a0)
+	310 J 0x140							08000140			// J PROLOGUE
+	311 add r0 r0 r0					00000020
+	PROGRAM 11: RECURSIVE FIBONACCI SEQUENCE N = 50
+	312 addi r4 r0  0x0008				20040018			//Compute 8th fibonacci number (a0)
+	313 J 0x140							08000140			// J PROLOGUE
+	314 add r0 r0 r0					00000020
+	
+	PROLOGUE
+	320 ORI r22 r22 0x0002				36D60002
+	321 addi r29 r29 0xC8				23BD00C8			//add 2000 to stack pointer
+	322 add r0 r0 r0					00000020
+	323 add r0 r0 r0					00000020
+	324 add r0 r0 r0					00000020
+	325 JAL 0x154						0C000154			// JAL FIBONACCI
+	326 add r0 r0 r0					00000020
+	327 J 0x147							08000147			//JUMP HERE FOREVER
+	328 add r0 r0 r0					00000020
+	
+	## Function int fibonacci (int n)
+	fibonacci:
+	340 addi r29  r29, 0xFFF4			23BDFFF4			# subtract 12 from stack pointer						
+	341 add r0 r0 r0					00000020
+	342 add r0 r0 r0					00000020
+	343 add r0 r0 r0					00000020
+	344 sw r31, 0x8(r29)				AFBF0008			# Save R31 (return address)
+	345 sw r16, 0x4(r29)				AFB00004			# Save R16 (Value of n)
+	346 sw r17, 0x0(r29)				AFB10000			# Save R17 (Intermediate result of Fibonacci)
+	347 add r16, r0, r4					00048020			# Move R4 (argument) into R16
+	348 addi r2 r0 0x01   				20020001			# return value for terminal condition
+	349 add r0 r0 r0					00000020
+	350 add r0 r0 r0					00000020
+	351 sub r23 r16 r22 				0216B822			# store result of R16 - 2 in R23
+	352 add r0 r0 r0					00000020
+	353 add r0 r0 r0					00000020
+	354 add r0 r0 r0					00000020
+	355 BLEZ r23, 0x0009 				1AE00009			# check terminal condition (R16 < 2) 
+	356 add r0 r0 r0 					00000020
+	357 addi r4, r16, 0xFFFF 			2204FFFF			# set args for recursive call to f(n-1) r4 = r16(n) - 0xFFFF(1)
+	358 JAL 0x154						0C000154			# JAL FIBONACCI
+	359 add r0 r0 r0					00000020
+	360 add r17, r2, r0 				00408820			# store result of f(n-1) to r17 
+	361 sub r4, r16, r22 				02162022			# set args for recursive call to f(n-2) r4 = r16(n) - 0xFFFE(2)
+	362 JAL 0x154						0C000154			# JAL FIBONACCI
+	363 add r0 r0 r0					00000020
+	364 add r2, r17, r2 				02221020			# add result of r2(result of f(n-2)) and r17(result of f(n-1)) to r2 
+	fibonacciExit:
+	# Epilogue
+	370 lw r31, 0x8(r29)				8FBF0008			# Load values from stack
+	371 lw r16, 0x4(r29)				8FB00004			# Load values from stack
+	372 lw r17, 0x0(r29)				8FB10000			# Load values from stack
+	373 addi r29 r29 0x000C				23BD000C			# add 12 back to stack
+	374 jr r31							03E00008			# jump back
+	375 add r0 r0 r0					00000020
+	## End of function fibonacci

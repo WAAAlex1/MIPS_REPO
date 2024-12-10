@@ -29,7 +29,7 @@ component INST_MEM is
    port(
        RESET     : in  std_logic;
        CLK       : in  std_logic;
-       ADDR      : in  STD_LOGIC_VECTOR(8 DOWNTO 0);
+       ADDR      : in  STD_LOGIC_VECTOR(9 DOWNTO 0);
        DATA_O    : out STD_LOGIC_VECTOR(INST_SIZE-1 downto 0)
        );
 end component INST_MEM;
@@ -62,7 +62,7 @@ begin
         PORT MAP(
             RESET     => RESET,
             CLK       => CLK,
-            ADDR      => PC_ADDR(8 DOWNTO 0),
+            ADDR      => PC_ADDR(9 DOWNTO 0),
             DATA_O    => MEM_DATA_O
         );
  

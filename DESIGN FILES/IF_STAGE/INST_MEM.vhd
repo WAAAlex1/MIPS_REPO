@@ -12,7 +12,7 @@ entity INST_MEM is
         port(
             RESET     : in  std_logic;
             CLK       : in  std_logic;
-            ADDR      : in  STD_LOGIC_VECTOR (8 DOWNTO 0);
+            ADDR      : in  STD_LOGIC_VECTOR (9 DOWNTO 0);
             DATA_O    : out std_logic_vector(INST_SIZE-1 DOWNTO 0)
         );
 end INST_MEM;
@@ -30,7 +30,7 @@ xpm_memory_spram_inst : xpm_memory_spram
 
 generic map (
 
-   ADDR_WIDTH_A => 9,              -- DECIMAL
+   ADDR_WIDTH_A => 10,              -- DECIMAL
    AUTO_SLEEP_TIME => 0,           -- DECIMAL
    BYTE_WRITE_WIDTH_A => 8,        -- DECIMAL
    CASCADE_HEIGHT => 0,            -- DECIMAL
@@ -42,7 +42,7 @@ generic map (
    MEMORY_INIT_PARAM => "0",       -- String
    MEMORY_OPTIMIZATION => "true",  -- String
    MEMORY_PRIMITIVE => "auto",     -- String
-   MEMORY_SIZE => 8192,           -- DECIMAL
+   MEMORY_SIZE => 32768,           -- DECIMAL
    MESSAGE_CONTROL => 0,           -- DECIMAL
    RAM_DECOMP => "auto",           -- String
    READ_DATA_WIDTH_A => 32,        -- DECIMAL
