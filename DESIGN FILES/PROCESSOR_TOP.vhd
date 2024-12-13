@@ -188,18 +188,18 @@ signal RESET_PC: STD_LOGIC_VECTOR(INST_SIZE-1 DOWNTO 0):=(others => '0');
 
 begin
 
-with PROG_SEL SELECT RESET_PC<= x"0000_0000" when "0001", -- TEST PROGRAM 
-                                x"0000_0000" when "0010", -- SUM PROGRAM WITH N = 0x0010   x"0000_00E6"
-                                x"0000_0000" when "0011", -- SUM PROGRAM WITH N = 0x0100   x"0000_00E9"
-                                x"0000_0000" when "0100", -- SUM PROGRAM WITH N = 0xF000   x"0000_00EC"
-                                x"0000_0000" when "0101", -- SUM PROGRAM WITH N = 0xFFFF   x"0000_00EF"
-                                x"0000_0000" when "0110", -- SUM PROGRAM WITH N = 0x1FFFF  x"0000_00F2"
-                                x"0000_0000" when "0111", -- FIBONACCI NUMBER 2            x"0000_012C"
-                                x"0000_0000" when "1000", -- FIBONACCI NUMBER 8            x"0000_012F"
-                                x"0000_0000" when "1001", -- FIBONACCI NUMBER 16           x"0000_0132"
-                                x"0000_0000" when "1010", -- FIBONACCI NUMBER 24           x"0000_0135"
-                                x"0000_0000" when "1011", -- FIBONACCI NUMBER ??           x"0000_0138"
-                                x"0000_0000" when others; -- DANCING LED SHIFTING PROGRAM  x"0000_0190"
+with PROG_SEL SELECT RESET_PC<= x"0000_0000" when "0001", -- TEST PROGRAM
+                                x"0000_00E6" when "0010", -- SUM PROGRAM WITH N = 0x0010   
+                                x"0000_00E9" when "0011", -- SUM PROGRAM WITH N = 0x0100   
+                                x"0000_00EC" when "0100", -- SUM PROGRAM WITH N = 0xF000   
+                                x"0000_00EF" when "0101", -- SUM PROGRAM WITH N = 0xFFFF   
+                                x"0000_00F2" when "0110", -- SUM PROGRAM WITH N = 0x10FFF  
+                                x"0000_012C" when "0111", -- FIBONACCI NUMBER 2            
+                                x"0000_012F" when "1000", -- FIBONACCI NUMBER 8            
+                                x"0000_0132" when "1001", -- FIBONACCI NUMBER 16           
+                                x"0000_0135" when "1010", -- FIBONACCI NUMBER 24          
+                                x"0000_0138" when "1011", -- FIBONACCI NUMBER 42           
+                                x"0000_0190" when others; -- DANCING LED SHIFTING PROGRAM
 
 MIPS_IF: IF_STAGE port map(
         --INPUTS

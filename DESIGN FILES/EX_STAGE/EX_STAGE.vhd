@@ -92,8 +92,6 @@ end component EX_MEM_REGISTERS;
 
 begin
 
-
-
 -- MUXES    -------------------------------------------------------
     -- RT_RD_IDX MUX
     -- RT_RD_IDX_INTERNAL = RT_IDX(instr[20-16]) when ALUTYPE = 00 (I-TYPE)

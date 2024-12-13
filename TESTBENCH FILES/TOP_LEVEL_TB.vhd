@@ -54,7 +54,7 @@ dut: TOP_LEVEL port map(
     
     process
     begin			
-		SWITCHES <= (6|8|4|1|2 => '1',others => '0');
+		SWITCHES <= (15|13|12|6|8|4|1|2 => '1',others => '0');
 		wait for 5*period;
 		SWITCHES(6) <= '0';           -- STOP RESETTING
         wait;
